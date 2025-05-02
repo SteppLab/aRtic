@@ -26,99 +26,106 @@ euler <- function(angles) {
   return(R)
 }
 
-make_RT <- function(par) {
-  RT <- diag(4)
-  RT[1:3, 1:3] <- euler(par[1:3])  
-  RT[4, 1:3] <- par[4:6]
-  RT
+cross_product <- function(a, b) {
+  c( a[2]*b[3] - a[3]*b[2],
+     a[3]*b[1] - a[1]*b[3],
+     a[1]*b[2] - a[2]*b[1]
+     )
 }
 
-objective <- function(par, data_subset, constraint) {
-  RT <- make_RT(par)
-  homog <- cbind(data_subset, 1)
-  fit <- homog |>
-    RT
-  valid <- !is.na(constraint)
-  sum((fit[valid] - constraint[valid])^2)
-  
-}
 
-define_coord <- function(data, ref_idx, bp_idx = NULL, constraint = NULL) {
+define_coord <- function(data, ref_idx, bp_idx, constraint = NULL) {
   
   # Checking is the minimum inputs are there
   if (missing(data) || missing(ref_idx)){
     stop('Usage: define_coord(data,ref_idx, bp_idx = NULL, constraint = NULL')
   }
   
-  # Checking to see if there are at least two referent sensors
+  # Checking to see if there are at least three referent sensors
   n_refs <- length(ref_idx)
-  if (n_refs < 2) {
-    stop('Need at least two referent sensors')
+  if (n_refs < 3) {
+    stop('Need at least three referent sensors')
   }
   
+  dims <- dim(data)
   n_time <-dim(data)[1] # Number of Time Points (samples)
   n_dims <-dim(data)[2] # Number of dimensions 
   n_sens <-dim(data)[3] # Number of Sensors
   
-  # Case when there are only two referent sensors
-  if (n_refs == 2) {
-    angles <- data[, 4:6, ref_idx] * pi / 180
-    
-    # Define pairings of referent sensors
-    idx <- matrix(c(1,2,1,3,2,3), ncol = 2)
-    
-    # Initializing df for coordinates
-    xyz_list <- list()
-    
-    for (k in 1:nrow(idx)) {
-      
-      x <- sin(a[, idx[k, 1], ]) * 10
-      y <- sin(a[, idx[k, 2], ]) * 10
-      z <- cos(a[, idx[k, 1], ]) * 10
-      
-      # Combine into a new xyz matrix, filling with NAs for unused dimensions
-      xyz <- array(NA, dim = c(length(x), n_dims, 2))
-      xyz[, 1:3, ] <- cbind(x, y, z) + data[, 1:3, ref_idx]  # Add offset from reference
-      xyz_list[[k]] <- xyz
-      
-    }
-    
-    # Combine data with original data
-    data <- abind::abind(data, do.call(cbind, xyz_list, along = 3))
-    
-  }
-  
-  return(data)
 
-  # if no constraint present, calculating mean and reorder sensors
+  # if no index present, calculating mean and reorder sensors
   if (is.null(bp_idx) || length(bp_idx == 0)) {
     
     basis <- apply(data[, 1:3, ref_idx, drop = F], c(2,3), function(x) mean(x, na.rm = T))
     basis <- t(basis)
     return(basis)
-    
   }
+
+  # Mean location of palate and referent points
+  all_idx <- c(ref_idx, bpidx)
   
-  if (is.null(constraint)) {
-    constraint <- rbind(matrix(NA, nrow = n_refs, ncol = 3),
-                        matrix(c(0, NA, 0,
-                                 NA, 0, 0,
-                                 0, NA, 0), byrow = T, ncol = 3))
-  } else {
-    constraint <- rbind(matrix(NA, nrow = n_refs, ncol = 3), constraint)
-  }
+  subset_data <- data[, 1:3, all_idx]
   
-  
-  
-  
-  
-  
-  # Mean positions of ref and bp_idx
-  data_subset <- data[, 1:3, c(refIdx, bpIdx)] |>
-    apply(c(2, 3), mean, na.rm = T) |>
+  mean_data <- apply(subset_data, c(2, 3), function(x) mean(x, na.rm = T)) |>
     t()
   
+  # Normal vector of the palate plane (5, 6, 7) divide each element by size of vector
   
+  norm_vec <- cross_product(v1, v2)
+  norm_vec <- normal_vec / sqrt(sum(normal_vec^2))
   
+  # normal vector of palate to calculate theta and phi angles
   
+  x <- norm_vec[1]
+  y <- norm_vec[2]
+  z <- norm_vec[3]
+  
+  # Inclination (theta): angle from z-axis, range [0, π]
+  theta <- acos(z) * 180/pi
+  
+  # Azimuth (phi): angle from x-axis in xy-plane, range [-π, π]
+  phi <- atan2(y, x) * 180/pi
+  
+  # Calculating roll
+  
+  # define vector of angles
+  p1 <- mean_data[1, ]  # Sensor 1
+  p2 <- mean_data[2, ]  # Sensor 2
+  p7 <- mean_data[7, ]  # Sensor 7
+  
+  # Create the vector along the line between sensor 1 and sensor 2
+  line_1_to_2 <- p2 - p1
+  
+  # Create the vector from sensor 1 to sensor 7
+  line_1_to_7 <- p7 - p1
+  
+  # Compute the normal vector perpendicular to both line_1_to_2 and line_1_to_7
+  roll_vec <- cross_product(line_1_to_2, line_1_to_7)
+  
+  # Normalize the normal vector
+  roll_vec <- roll_vec / sqrt(sum(roll_vec^2))
+  
+  # Compute the dot product between the normal vector and line_1_to_2
+  dot_product_line <- sum(roll_vec * line_1_to_2)
+  
+  # Compute the cross product between the normal vector and line_1_to_2
+  cross_product_line <- cross_product(roll_vec, line_1_to_2)
+  
+  # Compute the roll angle using the line between sensors 1 and 2 as the reference
+  roll <- atan2(sqrt(sum(cross_product_line^2)), dot_product_line) * 180 / pi
+  
+  # euler rotation matrix to rotate data 
+  
+  angles <- c(roll, theta, phi)
+  
+  base <- euler(angles)
+  
+    
 }
+
+
+
+
+
+
+
