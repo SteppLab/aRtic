@@ -62,7 +62,7 @@ define_coord <- function(data, ref_idx, bp_idx, constraint = NULL) {
   }
 
   # Mean location of palate and referent points
-  all_idx <- c(ref_idx, bpidx)
+  all_idx <- c(ref_idx, bp_idx)
   
   subset_data <- data[, 1:3, all_idx]
   
