@@ -46,7 +46,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
   
   # Checking is the minimum inputs are there
   if (missing(data) || missing(ref_idx)){
-    stop('Usage: define_coord(data,ref_idx, bp_idx = NULL, constraint = NULL')
+    stop('Usage: define_coord(data,ref_idx, bp_idx')
   }
   
   # Checking to see if there are at least three referent sensors
