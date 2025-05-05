@@ -13,7 +13,7 @@
 library(tidyverse)
 library(abind)
 
-euler <- function(angles) {
+.euler <- function(angles) {
   x <- angles[1]
   y <- angles[2]
   z <- angles[3]
@@ -34,7 +34,7 @@ euler <- function(angles) {
   return(R)
 }
 
-cross_product <- function(a, b) {
+.cross_product <- function(a, b) {
   c( a[2]*b[3] - a[3]*b[2],
      a[3]*b[1] - a[1]*b[3],
      a[1]*b[2] - a[2]*b[1]
@@ -76,7 +76,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
   V1 <- mean_data[5, ] - mean_data[4, ] # ref point 2 - ref point 1
   V2 <- mean_data[6, ] - mean_data[4, ] # bp point - ref point 1
   
-  norm_vec <- cross_product(V1, V2)
+  norm_vec <- .cross_product(V1, V2)
   norm_vec <- norm_vec / sqrt(sum(norm_vec^2))
   
   # normal vector of palate to calculate theta and phi angles
@@ -105,7 +105,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
   line_1_to_7 <- p7 - p1
   
   # Compute the normal vector perpendicular to both line_1_to_2 and line_1_to_7
-  roll_vec <- cross_product(line_1_to_2, line_1_to_7)
+  roll_vec <- .cross_product(line_1_to_2, line_1_to_7)
   
   # Normalize the normal vector
   roll_vec <- roll_vec / sqrt(sum(roll_vec^2))
@@ -114,7 +114,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
   dot_product_line <- sum(roll_vec * line_1_to_2)
   
   # Compute the cross product between the normal vector and line_1_to_2
-  cross_product_line <- cross_product(roll_vec, line_1_to_2)
+  cross_product_line <- .cross_product(roll_vec, line_1_to_2)
   
   # Compute the roll angle using the line between sensors 1 and 2 as the reference
   roll <- atan2(sqrt(sum(cross_product_line^2)), dot_product_line) * 180 / pi
@@ -123,7 +123,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
   
   angles <- c(roll, theta, phi)
   
-  base <- euler(angles)
+  base <- .euler(angles)
   
   # Rotate data (example for rotating each point in data_3D)
   rotated_data <- array(NA, dim = c(dim(data_3D)[1], 3, dim(data_3D)[3]))
