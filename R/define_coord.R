@@ -34,7 +34,7 @@ cross_product <- function(a, b) {
 }
 
 
-define_coord <- function(data, ref_idx, bp_idx, constraint = NULL) {
+define_coord <- function(data, ref_idx, bp_idx) {
   
   # Checking is the minimum inputs are there
   if (missing(data) || missing(ref_idx)){
@@ -47,32 +47,29 @@ define_coord <- function(data, ref_idx, bp_idx, constraint = NULL) {
     stop('Need at least three referent sensors')
   }
   
-  dims <- dim(data)
-  n_time <-dim(data)[1] # Number of Time Points (samples)
-  n_dims <-dim(data)[2] # Number of dimensions 
-  n_sens <-dim(data)[3] # Number of Sensors
+  data_3D <- data[[1]]
   
+  dims <- dim(data_3D)
+  n_time <-dim(data_3D)[1] # Number of Time Points (samples)
+  n_dims <-dim(data_3D)[2] # Number of dimensions 
+  n_sens <-dim(data_3D)[3] # Number of Sensors
 
-  # if no index present, calculating mean and reorder sensors
-  if (is.null(bp_idx) || length(bp_idx == 0)) {
-    
-    basis <- apply(data[, 1:3, ref_idx, drop = F], c(2,3), function(x) mean(x, na.rm = T))
-    basis <- t(basis)
-    return(basis)
-  }
 
   # Mean location of palate and referent points
   all_idx <- c(ref_idx, bp_idx)
   
-  subset_data <- data[, 1:3, all_idx]
+  subset_data <- data_3D[, 1:3, all_idx]
   
   mean_data <- apply(subset_data, c(2, 3), function(x) mean(x, na.rm = T)) |>
     t()
   
   # Normal vector of the palate plane (5, 6, 7) divide each element by size of vector
   
-  norm_vec <- cross_product(v1, v2)
-  norm_vec <- normal_vec / sqrt(sum(normal_vec^2))
+  V1 <- mean_data[5, ] - mean_data[4, ] # ref point 2 - ref point 1
+  V2 <- mean_data[6, ] - mean_data[4, ] # bp point - ref point 1
+  
+  norm_vec <- cross_product(V1, V2)
+  norm_vec <- norm_vec / sqrt(sum(norm_vec^2))
   
   # normal vector of palate to calculate theta and phi angles
   
@@ -91,7 +88,7 @@ define_coord <- function(data, ref_idx, bp_idx, constraint = NULL) {
   # define vector of angles
   p1 <- mean_data[1, ]  # Sensor 1
   p2 <- mean_data[2, ]  # Sensor 2
-  p7 <- mean_data[7, ]  # Sensor 7
+  p7 <- mean_data[6, ]  # Sensor 7
   
   # Create the vector along the line between sensor 1 and sensor 2
   line_1_to_2 <- p2 - p1
@@ -120,7 +117,18 @@ define_coord <- function(data, ref_idx, bp_idx, constraint = NULL) {
   
   base <- euler(angles)
   
-    
+  # Rotate data (example for rotating each point in data_3D)
+  rotated_data <- array(NA, dim = c(dim(data_3D)[1], 3, dim(data_3D)[3]))
+  
+  for (t in 1:dim(data_3D)[1]) {
+    for (s in 1:dim(data_3D)[3]) {
+      vec <- data_3D[t, 1:3, s]
+      rotated_data[t, , s] <- base %*% vec
+    }
+  }
+  
+  return(rotated_data)
+
 }
 
 
