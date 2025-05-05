@@ -1,0 +1,13 @@
+Package: ArticKinematics
+Type: Package
+Title: Preprocessing  Sensor Data from EMA Systems
+Version: 0.0.0.9000
+Author: Micah E. Hirsch, Ph.D. [aut, cre]
+Maintainer: Micah E. Hirsch <mehirsch@bu.edu>
+Description: This package is to provide an R workflow for preprocessing and analyzing articulatory kinematic data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+  dplyr,
+  readr

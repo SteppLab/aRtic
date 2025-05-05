@@ -3,11 +3,12 @@
 # Purpose: To test the functionality of the load_tsv 
 
 library(testthat)
-source(".\\R\\load_tsv.R")
-
+library(tidyverse)
+library(readr)
+library(here)
 
 test_that("load_tsv returns expected structure", {
-  result <- load_tsv(".\\tests\\sample_data\\PLURAL44_BitePlane.tsv")
+  result <- load_tsv(here("tests", "sample_data", "PLURAL44_BitePlane.tsv"))
   expect_type(result, "list")
   expect_length(result, 2)
   
