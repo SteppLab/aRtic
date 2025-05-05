@@ -1,9 +1,12 @@
-# load_tsv Function
-
-# Purpose: To read tsv file data from articulatory kinematic data
-
-library(tidyverse)
-library(readr)
+#' Load TSV Data
+#'
+#' Purpose: This function loads a TSV file into R, processes the data, and returns a list containing the 
+#' 3D matrix and a vector of timestamps.
+#' 
+#' @param file A string representing the path to the TSV file
+#' @return A list containing a 3D matrix of data and a numeric vector of timestamps
+#' @import dplyr readr
+#' @export
 
 load_tsv <- function(file) {
 
