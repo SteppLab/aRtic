@@ -1,4 +1,14 @@
-# mov_correct function
+#' Interpolation and Filtering of EMA Data
+#'
+#' Purpose: This function finds missing values in an EMA recording, uses linear 
+#' interpolation to fill in the missing values. And then smooths the data using a 
+#' low-pass 20 Hz butterworth filter.
+#' 
+#' @param data A string representing the name of the data matrix containing the raw EMA recording.
+#' @param ref_idx A vector representing the numeric ids of the three referent sensors
+#' @return The resulting 3D matrix of data
+#' @import zoo signal
+#' @export
 
 library(tidyverse)
 library(zoo)
@@ -23,11 +33,11 @@ interp_filter <- function(raw, ref_idx) {
       if (length(k) > 0) {
         
         interp_tmp <- zoo::na.approx(tmp, na.rm = F)
-        na_idx[[length(na_idx) + 1]] <- list(i = j, j = j, k = k)
+        na_idx[[length(na_idx) + 1]] <- list(i = i, j = j, k = k)
         interpolated[ ,i,j] <- interp_tmp
         
       } else {
-        interpolated[ ,i,j] <- interp_tmp
+        interpolated[ ,i,j] <- tmp
       }
     }
   }
