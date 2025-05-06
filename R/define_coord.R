@@ -4,8 +4,8 @@
 #' to redefine a coordinate plane for movement data.
 #' 
 #' @param data A string representing the name of the data matrix (imported from load_tsv)
-#' @param ref_idx A vector of the ids of the three referent sensors
-#' @param bp_idx A vecotr of the number ids of the bite plane sensors
+#' @param ref_idx A vector of the numeric ids of the three referent sensors
+#' @param bp_idx A vector of the numeric ids of the bite plane sensors
 #' @return A 3D array of the rotated coordinate data for the referent and bp sensors
 #' @import dplyr readr abind
 #' @export
