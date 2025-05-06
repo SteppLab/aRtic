@@ -44,8 +44,8 @@ interp_filter <- function(raw, ref_idx) {
   
   # filtering
   sr <- 100
-  butter5 <- butter(3, 5 / (sr/2), type ="low")
-  butter20 <- butter(3, 20 / (sr/2), type ="low")
+  butter5 <- butter(3, 5 / (sr/2), type = "low")
+  butter20 <- butter(3, 20 / (sr/2), type = "low")
   
   filtered <- array(NA_real_, dim = dim(interpolated))
   for (k in 1:dim(interpolated)[3]) {
