@@ -4,7 +4,7 @@ library(tidyverse)
 library(zoo)
 library(signal)
 
-interp_filter <- function(raw, ref_idx) {
+interp_filter <- function( raw, ref_idx) {
   
   raw_data <- raw[[1]]
   n_time <- dim(raw_data)[1]
@@ -19,15 +19,15 @@ interp_filter <- function(raw, ref_idx) {
   for (i in 1:n_dims) {
     for (j in 1:n_sens){
       tmp <- raw_data[ ,i,j]
-      k <- which(is.na(tmp))
+      k <- which(ios.na(tmp))
       if (length(k) > 0) {
         
         interp_tmp <- zoo::na.approx(tmp, na.rm = F)
         na_idx[[length(na_idx) + 1]] <- list(i = j, j = j, k = k)
-        interpolated[ ,i,j] <- interp_tmp
+        interpolated <- [ ,i,j] <- tmp
         
       } else {
-        interpolated[ ,i,j] <- interp_tmp
+        interpolated[ ,i,j] <- tmp
       }
     }
   }
