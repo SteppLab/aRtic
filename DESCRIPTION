@@ -10,4 +10,7 @@ Encoding: UTF-8
 LazyData: true
 Imports:
   dplyr,
-  readr
+  readr,
+  zoo,
+  signal,
+  abind
