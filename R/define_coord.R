@@ -44,7 +44,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
   
   # Normal vector of the palate plane (5, 6, 7) divide each element by size of vector
   
-  V1 <- mean_data[5, ] - mean_data[4, ] # ref point 2 - ref point 1
+  V1 <- mean_data[5, ] - mean_data[4, ] # ref point 2 - ref point 
   V2 <- mean_data[6, ] - mean_data[4, ] # bp point - ref point 1
   
   norm_vec <- cross_product(V1, V2)
@@ -92,17 +92,19 @@ define_coord <- function(data, ref_idx, bp_idx) {
   
   # euler rotation matrix to rotate data 
   
-  angles <- c(roll, theta, phi)
+  angles <- c(phi, 0, theta)
   
   base <- euler(angles)
   
   # Rotate data (example for rotating each point in data_3D)
   rotated_data <- array(NA, dim = c(dim(data_3D)[1], 3, dim(data_3D)[3]))
   
+  vec0 <- mean_data[4:6, ]
+  
   for (t in 1:dim(data_3D)[1]) {
     for (s in 1:dim(data_3D)[3]) {
       vec <- data_3D[t, 1:3, s]
-      rotated_data[t, , s] <- base %*% vec
+      rotated_data[t, , s] <- base %*% (vec - vec0) + vec0
     }
   }
   
