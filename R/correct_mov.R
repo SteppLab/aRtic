@@ -21,8 +21,6 @@ correct_mov <- function(coord, filtered, ref_idx, bp_idx) {
     pos <- cbind(sample[1:n_sens, 1:3], rep(1, n_sens,1)) %*% RT
     data[k, 1:3, ] <- t(pos[ , 1:3])
     
-    
-    
   }
   
   
