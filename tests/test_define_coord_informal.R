@@ -93,4 +93,5 @@ plot_rot <- plot_ly(df_rot_wide, x = ~X, y = ~Y, z = ~Z, color = ~factor(sensor_
   ))
 
 plot_rot
+
                  

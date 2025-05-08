@@ -25,6 +25,6 @@ euler <- function(angles) {
                  sin(z), cos(z), 0,
                  0, 0, 1), nrow = 3, byrow = T)
   
-  R <- Rx %*% Ry %*% Rz
+  R <- Rz %*% Ry %*% Rx
   return(R)
 }
