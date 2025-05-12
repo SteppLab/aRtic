@@ -4,10 +4,12 @@ library(readr)
 library(plotly)
 library(abind)
 library(here)
+library(pracma)
 source(".\\R\\load_tsv.R")
 source(".\\R\\cross_product.R")
 source(".\\R\\euler.R")
 source(".\\R\\define_coord.R")
+source(".\\R\\rotation_matrix.R")
 
 data <- load_tsv(here("tests", "sample_data", "PLURAL44_BitePlane.tsv"))
 

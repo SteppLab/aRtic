@@ -7,7 +7,7 @@
 #' @param ref_idx A vector of the numeric ids of the three referent sensors
 #' @param bp_idx A vector of the numeric ids of the bite plane sensors
 #' @return A 3D array of the rotated coordinate data for the referent and bp sensors
-#' @import dplyr readr abind
+#' @import dplyr readr abind pracma
 #' @export
 #' 
 
@@ -21,7 +21,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
   # Checking to see if there are at least three referent sensors
   n_refs <- length(ref_idx)
   if (n_refs < 3) {
-    stop('Need at least three referent sensors')
+    stop('Need three referent sensors')
   }
   
   data_3D <- data[[1]]
@@ -50,32 +50,28 @@ define_coord <- function(data, ref_idx, bp_idx) {
   V1 <- p5 - p7 # bp point 5 - bp point 7  
   V2 <- p6 - p7 # bp point 6 - bp point 7
   
-  mean <- (p5 + p6 + p7) /3
+  center <- (p5 + p6 + p7)/ 3
   
-  norm_vec <- cross_product(V1, V2)
+  norm_vec <- pracma::cross(V2, V1)
+  norm_vec <- -norm_vec
   norm_vec <- norm_vec / sqrt(sum(norm_vec^2))
   
-  # normal vector of palate to calculate theta and phi angles
+  # Setting the referent vector
+  ref_vec <- c(0, 0, 1)
   
-  x <- norm_vec[1]
-  y <- norm_vec[2]
-  z <- norm_vec[3]
+  # Computing rotation axis and angle between the norm vector and referent vector
+  axis <- pracma::cross(norm_vec, ref_vec)
+  axis <- axis/sqrt(sum(axis^2))
+  angle <- acos(pracma::dot(norm_vec, ref_vec))
   
-  # Inclination (theta): angle from z-axis, range [0, π]
-  theta <- acos(z) 
+  R <- rotation_matrix(axis, angle)
   
-  # Azimuth (phi): angle from x-axis in xy-plane, range [-π, π]
-  phi <- atan2(y, x) 
+  pitch <- asin(-R[3,1])
+  roll <- atan2(R[3,2], R[3,3])
+  yaw <- atan2(R[2,1], R[1,1])
   
+  angles <- c(roll, pitch, yaw)
   
-  # Calculating roll
-  
-  # roll <- atan2(V2[2], V2[1]) 
-  
-
-  # euler rotation matrix to rotate data 
-  
-  angles <- c(0, theta, phi)
   
   base <- euler(angles)
   
@@ -85,7 +81,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
   for (t in 1:dim(data_3D)[1]) {
     for (s in 1:dim(data_3D)[3]) {
       vec <- data_3D[t, 1:3, s]
-      rotated_data[t, , s] <- t(base) %*% (vec - mean) + mean
+      rotated_data[t, , s] <- base %*% (vec - center) + center
     }
   }
   
