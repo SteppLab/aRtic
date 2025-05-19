@@ -53,7 +53,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
   center <- (p5 + p6 + p7)/ 3
   
   norm_vec <- pracma::cross(V2, V1)
-  norm_vec <- -norm_vec
+  #norm_vec <- -norm_vec
   norm_vec <- norm_vec / sqrt(sum(norm_vec^2))
   
   # Setting the referent vector

@@ -1,4 +1,3 @@
-
 library(tidyverse)
 library(readr)
 library(plotly)
@@ -11,7 +10,7 @@ source(".\\R\\euler.R")
 source(".\\R\\define_coord.R")
 source(".\\R\\rotation_matrix.R")
 
-data <- load_tsv(here("tests", "sample_data", "PLURAL44_BitePlane.tsv"))
+data <- load_tsv(here("tests", "sample_data", "PLURAL02_BitePlane.tsv"))
 
 ref_idx <- c(1,2,3)
 bp_idx <- c(5,6,7)
@@ -32,9 +31,9 @@ for (sensor in 1:8) {
   
   for (axis in 1:3) {
     df <- data.frame(
-      sensor_id = rep(sensor, 696),
-      axis = rep(axis_name[axis], 696),
-      n_time <- 1:696,
+      sensor_id = rep(sensor, 774),
+      axis = rep(axis_name[axis], 774),
+      n_time <- 1:774,
       value = sensor_data[, axis]
     )
     
@@ -69,9 +68,9 @@ for (sensor in 1:8) {
   
   for (axis in 1:3) {
     df <- data.frame(
-      sensor_id = rep(sensor, 696),
-      axis = rep(axis_name[axis], 696),
-      n_time <- 1:696,
+      sensor_id = rep(sensor, 774),
+      axis = rep(axis_name[axis], 774),
+      n_time <- 1:774,
       value = sensor_data[, axis]
     )
     
