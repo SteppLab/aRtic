@@ -9,6 +9,7 @@ source(".\\R\\load_tsv.R")
 source(".\\R\\euler.R")
 source(".\\R\\define_coord.R")
 source(".\\R\\rotation_matrix.R")
+source(".\\R\\interp_filter.R")
 
 bite_data <- load_tsv(here("tests", "sample_data", "PLURAL02_BitePlane.tsv"))
 
@@ -23,4 +24,5 @@ sensor_data <- load_tsv(here("tests", "sample_data", "PLURAL02_RP.tsv"))
 
 sensor_data_3d <- sensor_data[[1]]
 
+interpolated <- interp_filter(sensor_data_3d, ref_idx)
 
