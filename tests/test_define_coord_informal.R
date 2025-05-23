@@ -5,7 +5,6 @@ library(abind)
 library(here)
 library(pracma)
 source(".\\R\\load_tsv.R")
-source(".\\R\\cross_product.R")
 source(".\\R\\euler.R")
 source(".\\R\\define_coord.R")
 source(".\\R\\rotation_matrix.R")
@@ -19,6 +18,8 @@ rotated <- define_coord(data, ref_idx, bp_idx)
 
 original <- data[[1]]
 
+n_dims <- dim(original)[1]
+
 original <- original[, 1:3, ]
 
 original_df <- list()
@@ -31,9 +32,9 @@ for (sensor in 1:8) {
   
   for (axis in 1:3) {
     df <- data.frame(
-      sensor_id = rep(sensor, 774),
-      axis = rep(axis_name[axis], 774),
-      n_time <- 1:774,
+      sensor_id = rep(sensor, n_dims),
+      axis = rep(axis_name[axis], n_dims),
+      n_time <- 1:n_dims,
       value = sensor_data[, axis]
     )
     
@@ -60,6 +61,8 @@ plot_original
 
 rotated_df <- list()
 
+n_dims <- dim(rotated)[1]
+
 for (sensor in 1:8) {
   
   sensor_data <- rotated[, 1:3, sensor]
@@ -68,9 +71,9 @@ for (sensor in 1:8) {
   
   for (axis in 1:3) {
     df <- data.frame(
-      sensor_id = rep(sensor, 774),
-      axis = rep(axis_name[axis], 774),
-      n_time <- 1:774,
+      sensor_id = rep(sensor, n_dims),
+      axis = rep(axis_name[axis], n_dims),
+      n_time <- 1:n_dims,
       value = sensor_data[, axis]
     )
     
