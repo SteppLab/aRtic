@@ -9,7 +9,7 @@ source(".\\R\\euler.R")
 source(".\\R\\define_coord.R")
 source(".\\R\\rotation_matrix.R")
 
-data <- load_tsv(here("tests", "sample_data", "PLURAL02_BitePlane.tsv"))
+data <- load_tsv(here("tests", "sample_data", "PLURAL44_BitePlane.tsv"))
 
 ref_idx <- c(1,2,3)
 bp_idx <- c(5,6,7)
