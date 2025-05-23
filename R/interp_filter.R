@@ -10,25 +10,20 @@
 #' @import zoo signal
 #' @export
 
-library(tidyverse)
-library(zoo)
-library(signal)
-
 interp_filter <- function(raw, ref_idx) {
   
-  raw_data <- raw[[1]]
-  n_time <- dim(raw_data)[1]
-  n_dims <- dim(raw_data)[2]
-  n_sens <- dim(raw_data)[3]
+  n_time <- dim(raw)[1]
+  n_dims <- dim(raw)[2]
+  n_sens <- dim(raw)[3]
   
   # Interpolation
   
   na_idx <- list()
-  interpolated <- array(NA, dim = dim(raw_data))
+  interpolated <- array(NA, dim = dim(raw))
   
   for (i in 1:n_dims) {
     for (j in 1:n_sens){
-      tmp <- raw_data[ ,i,j]
+      tmp <- raw[ ,i,j]
       k <- which(is.na(tmp))
       if (length(k) > 0) {
         

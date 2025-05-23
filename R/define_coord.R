@@ -24,18 +24,16 @@ define_coord <- function(data, ref_idx, bp_idx) {
     stop('Need three referent sensors')
   }
   
-  data_3D <- data[[1]]
-  
-  dims <- dim(data_3D)
-  n_time <-dim(data_3D)[1] # Number of Time Points (samples)
-  n_dims <-dim(data_3D)[2] # Number of dimensions 
-  n_sens <-dim(data_3D)[3] # Number of Sensors
+  dims <- dim(data)
+  n_time <-dim(data)[1] # Number of Time Points (samples)
+  n_dims <-dim(data)[2] # Number of dimensions 
+  n_sens <-dim(data)[3] # Number of Sensors
 
 
   # Mean location of palate and referent points
   all_idx <- c(ref_idx, bp_idx)
   
-  subset_data <- data_3D[, 1:3, all_idx]
+  subset_data <- data[, 1:3, all_idx]
   
   mean_data <- apply(subset_data, c(2, 3), function(x) mean(x, na.rm = T)) |>
     t()
@@ -76,11 +74,11 @@ define_coord <- function(data, ref_idx, bp_idx) {
   base <- euler(angles)
   
   # Rotate data (example for rotating each point in data_3D)
-  rotated_data <- array(NA, dim = c(dim(data_3D)[1], 3, dim(data_3D)[3]))
+  rotated_data <- array(NA, dim = c(dim(data)[1], 3, dim(data)[3]))
   
-  for (t in 1:dim(data_3D)[1]) {
-    for (s in 1:dim(data_3D)[3]) {
-      vec <- data_3D[t, 1:3, s]
+  for (t in 1:dim(data)[1]) {
+    for (s in 1:dim(data)[3]) {
+      vec <- data[t, 1:3, s]
       rotated_data[t, , s] <- base %*% (vec - center) + center
     }
   }
