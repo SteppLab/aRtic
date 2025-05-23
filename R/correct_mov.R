@@ -8,17 +8,18 @@ correct_mov <- function(coord, filtered, ref_idx, bp_idx) {
   n_time <- dim(filtered)[1]
   n_dims <- dim(filtered)[2]
   n_sens <- dim(filtered)[3]
+  coord_av <- apply(coord, c(2, 3), mean, na.rm = T)
   
   for (k in 1:n_time) {
     sample <- filtered[k, , , drop = T]
     
-    if (any(is.na(sample[ref_idx, 1:3]))) {
+    if (any(is.na(sample[1:3, ref_idx]))) {
       filtered[k, 1:3, ] <- NA
       next
     }
     
-    RT <- .compute_rt(sample[ref_idx, 1:3], coord)
-    pos <- cbind(sample[1:n_sens, 1:3], rep(1, n_sens,1)) %*% RT
+    RT <- .compute_rt(sample[1:3, ref_idx], coord_av[1:3, ref_idx])
+    pos <- cbind(t(sample[1:3, 1:n_sens]), matrix(1, nrow = n_sens, ncol = 1)) %*% RT
     data[k, 1:3, ] <- t(pos[ , 1:3])
     
   }
@@ -65,32 +66,49 @@ correct_mov <- function(coord, filtered, ref_idx, bp_idx) {
   pitch <- -asin(R[1,3])
   yaw <- atan2(R[1,2], R[1,1])
   
-  t <-  colMeans(M2, na.rm = T) - (colMeans(M1, na.rm = T) %*% R)
+  t <- colMeans(M2, na.rm = T) - colMeans(M1, na.rm = T) %*% R
+  t <- as.vector(t)
+        
+        
   
   RT <- diag(4)
   RT[1:3, 1:3] <- R
   RT[4, 1:3] <- t
   
-  xfm <- c(roll, pitch, yaw, t)
-
-  
-  return(xfm)
+  return(RT)
 
 
 }
 
-.detrend <- function(mat, method = "constant") {
+.detrend <- function(mat) {
   
-  detrended <- array(NA_real_, dim = dim(mat))
+  dims <- dim(mat)
+  detrended <- array(NA_real_, dim = dims)
   
-  for (i in seq_length(dim(mat)[2])) {
-    for (j in seq_length(dim(mat[3]))) {
-      y <- mat[, i, j]
+  if (length(dims) == 2) {
+    
+    for (i in seq_len(dims[2])) {
+      
+      y <- mat[, i]
       if (all(is.na(y))) next
       
-      detrended[ , i, j] <- y - mean(y, na.rm = T)
+      detrended[ ,i] <- y - mean(y, na.rm = T)
       
     }
+    
+  } else if (length(dims) == 3) {
+    
+    for (i in seq_len(dims[2])) {
+      for (j in seq_len(dims[3])) {
+        y <- mat[, i, j]
+        if (all(is.na(y))) next
+        detrended[ , i, j] <- y - mean(y, na.rm = T)
+      }
+    }
+  } else {
+    
+    stop("Input must be a 2D or 3D array.")
+    
   }
   
   return(detrended)
