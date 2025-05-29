@@ -48,7 +48,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
   V1 <- p5 - p7 # bp point 5 - bp point 7  
   V2 <- p6 - p7 # bp point 6 - bp point 7
   
-  center <- (p5 + p6 + p7)/ 3
+  center <- p7
   
   norm_vec <- pracma::cross(V2, V1)
   #norm_vec <- -norm_vec
@@ -62,16 +62,16 @@ define_coord <- function(data, ref_idx, bp_idx) {
   axis <- axis/sqrt(sum(axis^2))
   angle <- acos(pracma::dot(norm_vec, ref_vec))
   
-  R <- rotation_matrix(axis, angle)
+  base <- rotation_matrix(axis, angle)
   
-  pitch <- asin(-R[3,1])
-  roll <- atan2(R[3,2], R[3,3])
-  yaw <- atan2(R[2,1], R[1,1])
+  #pitch <- asin(-R[3,1])
+  #roll <- atan2(R[3,2], R[3,3])
+  #yaw <- atan2(R[2,1], R[1,1])
   
-  angles <- c(roll, pitch, yaw)
+  #angles <- c(roll, pitch, yaw)
   
   
-  base <- euler(angles)
+  #base <- euler(angles)
   
   # Rotate data (example for rotating each point in data_3D)
   rotated_data <- array(NA, dim = c(dim(data)[1], 3, dim(data)[3]))
@@ -79,7 +79,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
   for (t in 1:dim(data)[1]) {
     for (s in 1:dim(data)[3]) {
       vec <- data[t, 1:3, s]
-      rotated_data[t, , s] <- base %*% (vec - center) + center
+      rotated_data[t, , s] <- base %*% (vec - center)
     }
   }
   
