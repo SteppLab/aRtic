@@ -30,16 +30,31 @@ correct_mov <- function(filtered, ref_idx, rotation, center) {
       next
     }
     
-    mean_ref <- rowMeans(refs, na.rm = T)
-    mean_target <- rowMeans(ref_target, na.rm = T)
-    shift <- mean_target - mean_ref
+    refs_t <- t(refs)
+    target_t <- t(ref_target)
     
-    for (s in 1:n_sens) {
-      corrected[k, , s] <- aligned[k, , s] + shift
+    mean_refs <- colMeans(refs_t)
+    mean_target <- colMeans(target_t)
+    
+    refs_centered <- sweep(refs_t, 2, mean_refs)
+    target_centered <- sweep(target_t, 2, mean_target)
+    
+    result <- pracma::kabsch(refs_centered, target_centered)
+    R <- result$U 
+    
+    frame_t <- t(frame)
+    frame_centered <- sweep(frame_t, 2, mean_refs)
+    
+    rotated <- (R %*% t(frame_centered))
+    rotated <- t(rotated)
+    
+    aligned_frame <- sweep(rotated, 2, -mean_target, FUN = "-") * -1
+    aligned_frame <- sweep(rotated, 2, mean_target, FUN = "+")
+    
+    corrected[k, , ] <- t(aligned_frame)
+    
     }
     
-  }
-  
   return(corrected)
   
 }
