@@ -5,7 +5,6 @@ library(abind)
 library(here)
 library(pracma)
 source(".\\R\\load_tsv.R")
-source(".\\R\\euler.R")
 source(".\\R\\define_coord.R")
 source(".\\R\\rotation_matrix.R")
 

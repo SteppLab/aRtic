@@ -3,26 +3,40 @@
 library(tidyverse)
 
 
-correct_mov <- function(coord, filtered, ref_idx, bp_idx) {
+correct_mov <- function(filtered, ref_idx, rotation, center) {
   
   n_time <- dim(filtered)[1]
-  n_dims <- dim(filtered)[2]
+  #n_dims <- dim(filtered)[2]
   n_sens <- dim(filtered)[3]
   
-  coord_av <- apply(coord, c(2, 3), mean, na.rm = T)
-  corrected <- array(NA, dim = dim(filtered))  # Initialize output
+  aligned <- array(NA_real_, dim = c(n_time, 3, n_sens))
+  
+  for (t in 1:n_time) {
+    for(s in 1:n_sens) {
+      vec <- filtered[t, 1:3, s]
+      aligned[t, ,s] <- as.vector(rotation %*% (vec - center))
+    }
+  }
+  
+  ref_target <- apply(aligned[, , ref_idx], c(2,3), mean, na.rm = T)
+  corrected <- array(NA, dim = dim(aligned))
   
   for (k in 1:n_time) {
-    sample <- filtered[k, , , drop = T]
+    frame <- aligned[k, , ,drop = T]
+    refs <- frame[1:3, ref_idx, drop = F]
     
-    if (any(is.na(sample[1:3, ref_idx]))) {
-      filtered[k, 1:3, ] <- NA
+    if (any(is.na(refs))) {
+      corrected[k, , ] <- NA
       next
     }
     
-    RT <- .compute_rt(sample[1:3, ref_idx], coord_av[1:3, ref_idx])
-    pos <- cbind(t(sample[1:3, 1:n_sens]), matrix(1, nrow = n_sens, ncol = 1)) %*% RT
-    corrected[k, 1:3, ] <- t(pos[ , 1:3])
+    mean_ref <- rowMeans(refs, na.rm = T)
+    mean_target <- rowMeans(ref_target, na.rm = T)
+    shift <- mean_target - mean_ref
+    
+    for (s in 1:n_sens) {
+      corrected[k, , s] <- aligned[k, , s] + shift
+    }
     
   }
   
@@ -53,6 +67,11 @@ correct_mov <- function(coord, filtered, ref_idx, bp_idx) {
   vectors <- eig$vectors
   
   q <- vectors[, which.max(values)]
+  
+  if (q[1] < 0) {
+    q <- -q
+  }
+  
   q <- Re(q)
   q <- q/sqrt(sum(q^2))
   q0 <- q[1]
@@ -65,6 +84,12 @@ correct_mov <- function(coord, filtered, ref_idx, bp_idx) {
     2*(qx*qy + qz*q0),     1 - 2*(qx^2 + qz^2),   2*(qy*qz - qx*q0),
     2*(qx*qz - qy*q0),     2*(qy*qz + qx*q0),     1 - 2*(qx^2 + qy^2)
   ), nrow = 3, byrow = TRUE)
+  
+  detR <- det(R)
+  if (detR < 0) {
+    # Fix reflection by flipping third column (Z axis)
+    R[,3] <- -R[,3]
+  }
   
   roll <- atan2(R[2,3], R[3,3])
   pitch <- -asin(R[1,3])

@@ -73,7 +73,10 @@ define_coord <- function(data, ref_idx, bp_idx) {
     }
   }
   
-  return(rotated_data)
+  return(list(
+    rotated_data = rotated_data,
+    rotation = base,
+    center = center))
 
 }
 
