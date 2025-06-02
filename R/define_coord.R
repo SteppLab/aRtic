@@ -51,7 +51,6 @@ define_coord <- function(data, ref_idx, bp_idx) {
   center <- p7
   
   norm_vec <- pracma::cross(V2, V1)
-  #norm_vec <- -norm_vec
   norm_vec <- norm_vec / sqrt(sum(norm_vec^2))
   
   # Setting the referent vector
@@ -63,15 +62,6 @@ define_coord <- function(data, ref_idx, bp_idx) {
   angle <- acos(pracma::dot(norm_vec, ref_vec))
   
   base <- rotation_matrix(axis, angle)
-  
-  #pitch <- asin(-R[3,1])
-  #roll <- atan2(R[3,2], R[3,3])
-  #yaw <- atan2(R[2,1], R[1,1])
-  
-  #angles <- c(roll, pitch, yaw)
-  
-  
-  #base <- euler(angles)
   
   # Rotate data (example for rotating each point in data_3D)
   rotated_data <- array(NA, dim = c(dim(data)[1], 3, dim(data)[3]))
