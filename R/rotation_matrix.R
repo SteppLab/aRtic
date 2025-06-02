@@ -1,4 +1,12 @@
-
+#' Rotation Matrix Function
+#'
+#' Constructs a 3D rotation matrix given an axis of rotation and an angle.
+#' 
+#' @param axis A numeric vector of 3 representing the axis of rotation
+#' @param angle A numeric value representing the angle of rotation (radians)
+#' @return A 3x3 rotation matrix as a numeric matrix
+#' @export
+#' 
 
 rotation_matrix <- function(axis, angle) {
   
