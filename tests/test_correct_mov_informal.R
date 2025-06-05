@@ -35,28 +35,43 @@ interpolated <- interp_filter(sensor_data_3d, ref_idx)
 
 corrected <- correct_mov(interpolated, ref_idx, rotation, center)
 
-frame_idx <- 100
+n_time <- dim(corrected)[1]
 
-coord_av <- apply(rotated_plane, c(2, 3), mean, na.rm = T)
-#original <- apply(interpolated, c(2,3), mean, na.rm = T)
-#corrected <- apply(corrected, c(2,3), mean, na.rm = T)
-ref_pos <- t(coord_av[1:3, ])  # 8 x 3
-org_pos <- t(interpolated[frame_idx, 1:3, ])
-mov_pos <- t(corrected[frame_idx,1:3, ])  # Last frame's positions
+trajectory <- lapply(seq_along(ref_idx), function(i) {
+  s <- ref_idx[i]
+  df <- as.data.frame(corrected[, 1:3, s])
+  colnames(df) <- c("X", "Y", "Z")
+  df$Time <- 1:n_time
+  df$Sensor <- paste0("Ref", s)
+  return(df)
+})
 
-
-ref_df <- data.frame(ref_pos, sensor = factor(1:8), type = "ref")
-orig_df <- data.frame(org_pos, sensor = factor(1:nrow(org_pos)), type = "org")
-mov_df <- data.frame(mov_pos, sensor = factor(1:nrow(mov_pos)), type = "mov")
-
-colnames(ref_df)[1:3] <- colnames(orig_df)[1:3] <- colnames(mov_df)[1:3] <- c("X", "Y", "Z")
+traj_df <- do.call(rbind, trajectory)
 
 
-plot_ly() %>%
-  add_markers(data = ref_df, x = ~X, y = ~Y, z = ~Z, color = ~type, symbol = ~sensor) %>%
-  add_markers(data = orig_df, x = ~X, y = ~Y, z = ~Z, color = ~type, symbol = ~sensor) %>%
-  add_markers(data = mov_df, x = ~X, y = ~Y, z = ~Z, color = ~type, symbol = ~sensor) %>%
-  layout(scene = list(xaxis = list(title = 'X'),
-                      yaxis = list(title = 'Y'),
-                      zaxis = list(title = 'Z')),
-         title = paste("Frame", frame_idx))
+plot_ly(traj_df,  x = ~X, y = ~Y, z = ~Z, color = ~Sensor, type = "scatter3d",
+        mode = "lines+markers") |>
+  layout(scene = list(xaxis = list(title = "X"),
+                      yaxis = list(title = "Y"),
+                      zaxis = list(title = "Z")),
+         title = "Reference Sensor Trajectories (After Correction)")
+
+
+orig <- lapply(seq_along(ref_idx), function(i) {
+  s <- ref_idx[i]
+  df <- as.data.frame(interpolated[, 1:3, s])
+  colnames(df) <- c("X", "Y", "Z")
+  df$Time <- 1:n_time
+  df$Sensor <- paste0("Ref", s)
+  return(df)
+})
+
+orig_df <- do.call(rbind, orig)
+
+plot_ly(orig_df,  x = ~X, y = ~Y, z = ~Z, color = ~Sensor, type = "scatter3d",
+        mode = "lines+markers") |>
+  layout(scene = list(xaxis = list(title = "X"),
+                      yaxis = list(title = "Y"),
+                      zaxis = list(title = "Z")),
+         title = "Reference Sensor Trajectories (Before Correction)")
+

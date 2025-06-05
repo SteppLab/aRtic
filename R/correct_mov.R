@@ -1,8 +1,16 @@
-# Correct Movement Function
-
-library(tidyverse)
-
-
+#' Correct Movement Function (correct_mov)
+#'
+#' Purpose: This function rotates 3D articulatory kinematic data from a data recording
+#' in reference to rotated bite plane data.
+#' 
+#' @param filtered A 3d array of interpolated and filtered data from the data recording
+#' @param ref_idx A vector of the numeric ids of the three referent sensors
+#' @param rotation A rotation matrix extracted from define_coord
+#' @param center A vector with a length of 3 representing the translation vector extracted from define_coord
+#' @return A 3D array of the rotated data from the data recording
+#' @import dplyr pracma
+#' @export
+#' 
 correct_mov <- function(filtered, ref_idx, rotation, center) {
   
   n_time <- dim(filtered)[1]
