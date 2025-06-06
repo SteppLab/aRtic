@@ -55,6 +55,7 @@ est_palate <- function(data, ref_idx, pl_idx, rotation, center) {
     pt_2d <- to_2d(pt)
     
     
+    
   }
   
   stylus_filtered <- stylus
