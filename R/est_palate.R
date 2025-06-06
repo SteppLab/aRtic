@@ -13,7 +13,7 @@
 #' @export
 #' 
 
-est_palate <- function(data, ref_idx, pl_idx rotation, center) {
+est_palate <- function(data, ref_idx, pl_idx, rotation, center) {
   
   n_time <- dim(data)[1]
   n_dims <- dim(data)[2]
@@ -22,6 +22,8 @@ est_palate <- function(data, ref_idx, pl_idx rotation, center) {
   filtered_palate <- interp_filter(data, ref_idx)
 
   corrected_palate <- correct_mov(filtered_palate, ref_idx, rotation, center)
+  
+  palate_trace <- corrected_palate[, 1:3, pl_idx]
   
   
   
