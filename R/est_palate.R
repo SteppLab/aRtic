@@ -23,8 +23,44 @@ est_palate <- function(data, ref_idx, pl_idx, rotation, center) {
 
   corrected_palate <- correct_mov(filtered_palate, ref_idx, rotation, center)
   
-  palate_trace <- corrected_palate[, 1:3, pl_idx]
+  palate_trace <- corrected_palate[, 1:3, ]
   
+  ref_mean <- apply(palate_trace[, , ref_idx], c(2, 3), mean, na.rm = T)
+  s1 <- ref_mean[,1]
+  s2 <- ref_mean[,2]
+  s3 <- ref_mean[,3]
   
+  s1_s2 <- s2 - s1
+  s1_s3 <- s3 - s1
+  norm_vec <- pracma::cross(s1_s2, s1_s3)
+  norm_vec <- norm_vec/sqrt(sum(norm_vec^2))
+  
+  u <- s1_s2 / sqrt(sum(s1_s2^2))
+  v <- pracma::cross(norm_vec, u)
+  
+  to_2d <- function(P) {
+    rel <- P - s1
+    c(sum(rel * u), sum(rel * v))
+  }
+  
+  tri_2d <- t(sapply(list(s1, s2, s3), to_2d))
+  
+  stylus <- data[ , , 8]  # stylus data
+  inside <- logical(nrow(stylus))
+  
+  for (t in 1:nrow(stylus)) {
+    pt <- stylus[t, ]
+    if (any(is.na(pt))) next
+    
+    pt_2d <- to_2d(pt)
+    
+    
+  }
+  
+  stylus_filtered <- stylus
+  stylus_filtered[!inside, ] <- NA
+  
+  data_filtered <- data
+  data_filtered[ , , 8] <- stylus_filtered
   
 }
