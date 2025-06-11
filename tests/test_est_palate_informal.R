@@ -39,7 +39,7 @@ all_idx <- c(ref_idx, pl_idx)
 
 palate_trace1 <- lapply(seq_along(all_idx), function(i) {
   s <- c(all_idx[i])
-  df <- as.data.frame(corrected_palate[, 1:3, s])
+  df <- as.data.frame(palate_trace[, 1:3, s])
   colnames(df) <- c("X", "Y", "Z")
   df$Time <- 1:n_time
   df$Sensor <- paste0(s)
@@ -48,10 +48,19 @@ palate_trace1 <- lapply(seq_along(all_idx), function(i) {
 
 palate_df <- do.call(rbind, palate_trace1)
 
+palate_df <- as.data.frame(palate_df) |>
+  dplyr::filter(Sensor != 8)
 
-plot_ly(as.data.frame(stylus_filtered),  x = ~V1, y = ~V2, z = ~V3, type = "scatter3d",
-        mode = "lines+markers") |>
+base <- plot_ly(palate_df, x = ~X, y = ~Y,
+        type = "scatter", mode = "markers") 
+
+plot <- add_trace(base, data = spline_df, x = ~X, y = ~Y,
+            type = "scatter", mode = "lines",
+            line = list(color = 'black', width = 4),
+            name = "Principal Curve") |>
   layout(scene = list(xaxis = list(title = "X"),
                       yaxis = list(title = "Y"),
                       zaxis = list(title = "Z")),
-         title = "Palate Trace")
+         title = "Palate Trace with Principal Curve")
+
+plot

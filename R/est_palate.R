@@ -9,7 +9,7 @@
 #' @param rotation A rotation matrix extracted from define_coord
 #' @param center A vector with a length of 3 representing the translation vector extracted from define_coord
 #' @return A 3D array of the rotated data from the data recording
-#' @import dplyr pracma geometry correct_mov interp_filter
+#' @import dplyr pracma geometry princurve correct_mov interp_filter
 #' @export
 #' 
 
@@ -28,14 +28,78 @@ est_palate <- function(data, ref_idx, pl_idx, rotation, center) {
   ref_mean <- apply(palate_trace[, , ref_idx], c(2, 3), mean, na.rm = T) |>
     t()
   
-  hull <- geometry::convhulln(ref_mean)
+  s1 <- ref_mean[1, ]
+  s2 <- ref_mean[2, ]
+  s3 <- ref_mean[3, ]
   
+  v1 <- s2 - s1
+  v2 <- s3 - s1
   
+  normal <- pracma::cross(v1, v2)
+  normal <- normal/sqrt(sum(normal^2))
+  
+  u <- v1/sqrt(sum(v1^2))
+  v <- pracma::cross(normal, u)
+  
+  origin <- s1
+  triangle_2d <- rbind(
+    to_2d(s1, origin, u, v),
+    to_2d(s2, origin, u, v),
+    to_2d(s3, origin, u, v)
+  )
+  
+  in_triangle <- logical(n_time)
+  
+  for (t in 1:n_time) {
     
+    pt <- palate_trace[t, ,pl_idx]
+    pt_proj <- project_point_to_plane(pt, origin, normal)
+    pt_2d <- to_2d(pt_proj, origin, u, v)
+    
+    in_triangle <- sp::point.in.polygon(
+      pt_2d[1],
+      pt_2d[2],
+      triangle_2d[, 1],
+      triangle_2d[, 2]
+      ) > 0 
+      
+    if (!in_triangle) {
+      palate_trace[t, , pl_idx] <- NA
+    }
+    
+  }
+  
+  palate <- palate_trace[ , ,pl_idx]
+  
+  palate_clean <- palate[!apply(palate, 1, function(row) any(is.na(row))), ]
+  
+  coords <- scale(palate_clean, center = T, scale = F)
+  
+  pca <- prcomp(coords)
+  
+  pc1_vals <- pca$x[ , 1]
+  
+  spline_x <- smooth.spline(x = pc1_vals, y = coords[, 1], spar = .6)
+  spline_y <- smooth.spline(x = pc1_vals, y = coords[, 2], spar = .6)
+  spline_z <- smooth.spline(x = pc1_vals, y = coords[, 3], spar = .6)
+  
+  s_grid <- seq(min(pc1_vals), max(pc1_vals), length.out = 200)
+  
+  fit_x <- predict(spline_x, s_grid)$y
+  fit_y <- predict(spline_y, s_grid)$y
+  fit_z <- predict(spline_z, s_grid)$y
+  
+  spline_df <- data.frame(X = fit_x, Y = fit_y, Z = fit_z)
+
+}
+
+project_point_to_plane<- function(x, origin, normal) {
+  x_proj <- x - sum((x - origin) * normal) * normal
+  return(x_proj)
 }
 
 
-.project_to_plane_2d <- function(P) {
-  rel <- P - A
-  c(sum(rel * u), sum(rel * v))
+to_2d <- function(x_proj, origin, u, v) {
+  vec <- x_proj - origin
+  c(sum(vec * u), sum(vec * v))
 }
