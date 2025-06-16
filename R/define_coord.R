@@ -31,27 +31,11 @@ define_coord <- function(data, ref_idx, bp_idx) {
 
 
   # Mean location of palate and referent points
-  all_idx <- c(ref_idx, bp_idx)
   
-  subset_data <- data[, 1:3, all_idx]
+  subset_data <- data[, 1:3, ]
   
   mean_data <- apply(subset_data, c(2, 3), function(x) mean(x, na.rm = T)) |>
     t()
-  
-  # define vector of angles
-  p5 <- mean_data[4, ]  # Sensor 5
-  p6 <- mean_data[5, ]  # Sensor 6
-  p7 <- mean_data[6, ]  # Sensor 7
-  
-  # Normal vector of the palate plane (5, 6, 7) divide each element by size of vector
-  
-  V1 <- p5 - p7 # bp point 5 - bp point 7  
-  V2 <- p6 - p7 # bp point 6 - bp point 7
-  
-  center <- p7
-  
-  norm_vec <- pracma::cross(V2, V1)
-  norm_vec <- norm_vec / sqrt(sum(norm_vec^2))
   
   # Setting the referent vector
   ref_vec <- c(0, -1, 0)
@@ -72,8 +56,6 @@ define_coord <- function(data, ref_idx, bp_idx) {
       rotated_data[t, , s] <- base %*% (vec - center)
     }
   }
-  
-  #rotated_data[, 3, ] <- -rotated_data[, 3,]
   
   return(list(
     rotated_data = rotated_data,

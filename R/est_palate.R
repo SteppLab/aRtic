@@ -9,7 +9,7 @@
 #' @param rotation A rotation matrix extracted from define_coord
 #' @param center A vector with a length of 3 representing the translation vector extracted from define_coord
 #' @return A 2D matrix of the estimated X, Y, and Z coordinates of the palate
-#' @import dplyr pracma geometry princurve correct_mov interp_filter
+#' @import dplyr pracma geometry sp correct_mov interp_filter
 #' @export
 #' 
 

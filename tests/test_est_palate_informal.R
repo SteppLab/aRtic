@@ -54,16 +54,6 @@ palate_df <- do.call(rbind, palate_trace1)
 
 palate_df <- as.data.frame(palate_df)
 
-base <- plot_ly(palate_df, x = ~X, y = ~Y, color = ~Sensor,
-        type = "scatter", mode = "lines") 
+plot_ly(palate_df, x = ~X, y = ~Y, z = ~Z, color = ~Sensor,
+        type = "scatter3d", mode = "lines") 
 
-plot <- add_trace(base, data = data, x = ~X, y = ~Y,
-            type = "scatter", mode = "lines",
-            line = list(color = 'black', width = 4),
-            name = "Principal Curve") |>
-  layout(scene = list(xaxis = list(title = "X"),
-                      yaxis = list(title = "Y"),
-                      zaxis = list(title = "Z")),
-         title = "Palate Trace with Principal Curve")
-
-plot

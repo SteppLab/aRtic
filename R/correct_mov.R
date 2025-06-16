@@ -26,6 +26,8 @@ correct_mov <- function(filtered, ref_idx, rotation, center) {
     }
   }
   
+  
+  
   ref_target <- apply(aligned[, , ref_idx], c(2,3), mean, na.rm = T)
   corrected <- array(NA, dim = dim(aligned))
   

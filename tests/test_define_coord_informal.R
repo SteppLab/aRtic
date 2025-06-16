@@ -90,7 +90,7 @@ df_rot_wide <- df_rot |>
   pivot_wider(names_from = "axis",
               values_from = "value")
 
-plot_rot <- plot_ly(df_rot_wide, x = ~X, y = ~Y, z = ~Z, color = ~factor(sensor_id), type = "scatter", mode = "markers") %>%
+plot_rot <- plot_ly(df_rot_wide, x = ~X, y = ~Y, z = ~Z, color = ~factor(sensor_id), type = "scatter3d", mode = "markers") %>%
   layout(scene = list(
     xaxis = list(title = 'X'),
     yaxis = list(title = 'Y'),
