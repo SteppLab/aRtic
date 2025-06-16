@@ -60,11 +60,13 @@ plot_original
 
 rotated_df <- list()
 
-n_dims <- dim(rotated)[1]
+rotated_data <- rotated[[1]]
+
+n_dims <- dim(rotated_data)[1]
 
 for (sensor in 1:8) {
   
-  sensor_data <- rotated[, 1:3, sensor]
+  sensor_data <- rotated_data[, 1:3, sensor]
   
   axis_name <- c("X", "Y", "Z")
   
@@ -88,7 +90,7 @@ df_rot_wide <- df_rot |>
   pivot_wider(names_from = "axis",
               values_from = "value")
 
-plot_rot <- plot_ly(df_rot_wide, x = ~X, y = ~Y, z = ~Z, color = ~factor(sensor_id), type = "scatter3d", mode = "markers") %>%
+plot_rot <- plot_ly(df_rot_wide, x = ~X, y = ~Y, z = ~Z, color = ~factor(sensor_id), type = "scatter", mode = "markers") %>%
   layout(scene = list(
     xaxis = list(title = 'X'),
     yaxis = list(title = 'Y'),

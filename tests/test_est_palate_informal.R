@@ -35,6 +35,10 @@ data_palate <- load_tsv(here("tests", "sample_data", "PLURAL02_PalateTrace.tsv")
 
 data <- data_palate[[1]]
 
+palate_trace <- est_palate(data, ref_idx, pl_idx, rotation, center)
+
+n_time <- dim(palate_trace)[1]
+
 all_idx <- c(ref_idx, pl_idx)
 
 palate_trace1 <- lapply(seq_along(all_idx), function(i) {
@@ -48,13 +52,12 @@ palate_trace1 <- lapply(seq_along(all_idx), function(i) {
 
 palate_df <- do.call(rbind, palate_trace1)
 
-palate_df <- as.data.frame(palate_df) |>
-  dplyr::filter(Sensor != 8)
+palate_df <- as.data.frame(palate_df)
 
-base <- plot_ly(palate_df, x = ~X, y = ~Y,
-        type = "scatter", mode = "markers") 
+base <- plot_ly(palate_df, x = ~X, y = ~Y, color = ~Sensor,
+        type = "scatter", mode = "lines") 
 
-plot <- add_trace(base, data = spline_df, x = ~X, y = ~Y,
+plot <- add_trace(base, data = data, x = ~X, y = ~Y,
             type = "scatter", mode = "lines",
             line = list(color = 'black', width = 4),
             name = "Principal Curve") |>

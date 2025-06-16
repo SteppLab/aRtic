@@ -8,7 +8,7 @@
 #' @param ref_idx A vector of the numeric ids of the three referent sensors
 #' @param rotation A rotation matrix extracted from define_coord
 #' @param center A vector with a length of 3 representing the translation vector extracted from define_coord
-#' @return A 3D array of the rotated data from the data recording
+#' @return A 2D matrix of the estimated X, Y, and Z coordinates of the palate
 #' @import dplyr pracma geometry princurve correct_mov interp_filter
 #' @export
 #' 
@@ -90,6 +90,8 @@ est_palate <- function(data, ref_idx, pl_idx, rotation, center) {
   fit_z <- predict(spline_z, s_grid)$y
   
   spline_df <- data.frame(X = fit_x, Y = fit_y, Z = fit_z)
+  
+  return(spline_df)
 
 }
 

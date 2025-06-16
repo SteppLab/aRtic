@@ -54,7 +54,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
   norm_vec <- norm_vec / sqrt(sum(norm_vec^2))
   
   # Setting the referent vector
-  ref_vec <- c(0, 1, 0)
+  ref_vec <- c(0, -1, 0)
   
   # Computing rotation axis and angle between the norm vector and referent vector
   axis <- pracma::cross(norm_vec, ref_vec)
@@ -72,6 +72,8 @@ define_coord <- function(data, ref_idx, bp_idx) {
       rotated_data[t, , s] <- base %*% (vec - center)
     }
   }
+  
+  #rotated_data[, 3, ] <- -rotated_data[, 3,]
   
   return(list(
     rotated_data = rotated_data,
