@@ -7,6 +7,8 @@ library(pracma)
 source(".\\R\\load_tsv.R")
 source(".\\R\\define_coord.R")
 source(".\\R\\rotation_matrix.R")
+source(".\\R\\norm_vec.R")
+source(".\\R\\center.R")
 
 data <- load_tsv(here("tests", "sample_data", "PLURAL02_BitePlane.tsv"))
 

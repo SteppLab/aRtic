@@ -11,6 +11,8 @@ source(".\\R\\define_coord.R")
 source(".\\R\\rotation_matrix.R")
 source(".\\R\\interp_filter.R")
 source(".\\R\\correct_mov.R")
+source(".\\R\\norm_vec.R")
+source(".\\R\\center.R")
 
 bite_data <- load_tsv(here("tests", "sample_data", "PLURAL02_BitePlane.tsv"))
 
@@ -23,17 +25,21 @@ rotated <- define_coord(bite_data_3d, ref_idx, bp_idx)
 
 rotated_plane <- rotated[[1]]
 
-rotation <- rotated[[2]]
+base_rt <- rotated[[2]]
 
-center <- rotated[[3]]
+base_center <- rotated[[3]]
+
+ref_rt <- rotated[[4]]
+
+ref_center <- rotated[[5]]
 
 sensor_data <- load_tsv(here("tests", "sample_data", "PLURAL02_RP.tsv"))
 
 sensor_data_3d <- sensor_data[[1]]
 
-interpolated <- interp_filter(sensor_data_3d, ref_idx)
+filtered <- interp_filter(sensor_data_3d, ref_idx)
 
-corrected <- correct_mov(interpolated, ref_idx, rotation, center)
+corrected <- correct_mov(filtered, ref_idx, base_rt, base_center, ref_rt, ref_center)
 
 n_time <- dim(corrected)[1]
 
@@ -47,7 +53,6 @@ trajectory <- lapply(seq_along(ref_idx), function(i) {
 })
 
 traj_df <- do.call(rbind, trajectory)
-
 
 plot_ly(traj_df,  x = ~X, y = ~Y, z = ~Z, color = ~Sensor, type = "scatter3d",
         mode = "lines+markers") |>
