@@ -2,17 +2,14 @@
 #'
 #' Calculates the normal vector in reference to a plane defined by three points
 #' 
-#' @param data A string representing the name of the data matrix (imported from load_tsv)
-#' @param ref_idx A vector of the numeric ids of the three referent sensors
-#' @param bp_idx A vector of the numeric ids of the bite plane sensors
-#' @return A list containing the normal vector of the plane and the center point for
-#' rotation and translation
+#' @param mean_data A 2D matrix representing the mean points in the X, Y, and Z dimensions of three sensors
+#' @param sensor_idx A vector of the numeric ids of the three plane sensors
+#' @return A vector with a length of three representing the normal vector of the plane
 #' @import dplyr pracma
 #' @export
 #' 
-#' 
 
-norm_vec <- function(mean_data, sensor_idx, center = c("mean", "point"), center_pt = NULL) {
+norm_vec <- function(mean_data, sensor_idx) {
   
   # define points
   p1 <- mean_data[sensor_idx[1], ]
@@ -23,16 +20,6 @@ norm_vec <- function(mean_data, sensor_idx, center = c("mean", "point"), center_
   
   V1 <- p1 - p3   
   V2 <- p2 - p3
-  
-  if (center == "mean") {
-    
-    center = (p1 + p2 + p3) / 3
-    
-  } else {
-    
-    center <- center_pt
-    
-  }
   
   # Calculating the normal vector
   

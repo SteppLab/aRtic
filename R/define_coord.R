@@ -29,23 +29,26 @@ define_coord <- function(data, ref_idx, bp_idx) {
   n_dims <-dim(data)[2] # Number of dimensions 
   n_sens <-dim(data)[3] # Number of Sensors
 
-
   # Mean location of palate and referent points
-  
   subset_data <- data[, 1:3, ]
   
   mean_data <- apply(subset_data, c(2, 3), function(x) mean(x, na.rm = T)) |>
     t()
   
+  # Computing the normal vector of the bite plane
+  normal_vec <- norm_vec(mean_data, bp_idx)
+  
   # Setting the referent vector
   ref_vec <- c(0, -1, 0)
   
-  # Computing rotation axis and angle between the norm vector and referent vector
-  axis <- pracma::cross(norm_vec, ref_vec)
+  # Computing rotation axis and angle between the normal vector and referent vector
+  axis <- pracma::cross(normal_vec, ref_vec)
   axis <- axis/sqrt(sum(axis^2))
-  angle <- acos(pracma::dot(norm_vec, ref_vec))
+  angle <- acos(pracma::dot(normal_vec, ref_vec))
   
   base <- rotation_matrix(axis, angle)
+  
+  rot_center <- center(mean_data, bp_idx)
   
   # Rotate data (example for rotating each point in data_3D)
   rotated_data <- array(NA, dim = c(dim(data)[1], 3, dim(data)[3]))
@@ -53,14 +56,20 @@ define_coord <- function(data, ref_idx, bp_idx) {
   for (t in 1:dim(data)[1]) {
     for (s in 1:dim(data)[3]) {
       vec <- data[t, 1:3, s]
-      rotated_data[t, , s] <- base %*% (vec - center)
+      rotated_data[t, , s] <- base %*% (vec - rot_center)
     }
   }
   
+  head_vec <- norm_vec(mean_data, ref_idx)
+  
+  head_center <- center(mean_data, ref_idx)
+  
   return(list(
     rotated_data = rotated_data,
-    rotation = base,
-    center = center))
+    base_rt = base,
+    base_center = rot_center,
+    head_vec = head_vec,
+    head_center = head_center))
 
 }
 
