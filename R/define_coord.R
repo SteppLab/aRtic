@@ -7,7 +7,7 @@
 #' @param ref_idx A vector of the numeric ids of the three referent sensors
 #' @param bp_idx A vector of the numeric ids of the bite plane sensors
 #' @return A 3D array of the rotated coordinate data for the referent and bp sensors
-#' @import dplyr readr abind pracma
+#' @import dplyr pracma
 #' @export
 #' 
 
@@ -60,6 +60,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
     }
   }
   
+  # Defining normal vector and center of the head plane
   head_vec <- norm_vec(mean_data, ref_idx)
   
   head_center <- center(mean_data, ref_idx)
