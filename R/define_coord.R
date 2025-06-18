@@ -50,7 +50,7 @@ define_coord <- function(data, ref_idx, bp_idx) {
   
   rot_center <- center(mean_data, bp_idx)
   
-  # Rotate data (example for rotating each point in data_3D)
+  # Rotate data
   rotated_data <- array(NA, dim = c(dim(data)[1], 3, dim(data)[3]))
   
   for (t in 1:dim(data)[1]) {
