@@ -1,3 +1,5 @@
+# Informal test of correct_mov
+
 library(tidyverse)
 library(readr)
 library(plotly)
@@ -39,16 +41,18 @@ sensor_data_3d <- sensor_data[[1]]
 
 filtered <- interp_filter(sensor_data_3d, ref_idx)
 
-corrected <- correct_mov(filtered, ref_idx, base_rt, base_center, ref_rt, ref_center)
+corrected <- correct_mov(filtered, rotated_plane, ref_idx, base_rt, base_center)
 
 n_time <- dim(corrected)[1]
 
-trajectory <- lapply(seq_along(ref_idx), function(i) {
-  s <- ref_idx[i]
+all_idx <- c(1:8)
+
+trajectory <- lapply(seq_along(all_idx), function(i) {
+  s <- all_idx[i]
   df <- as.data.frame(corrected[, 1:3, s])
   colnames(df) <- c("X", "Y", "Z")
   df$Time <- 1:n_time
-  df$Sensor <- paste0("Ref", s)
+  df$Sensor <- paste0(s)
   return(df)
 })
 

@@ -1,3 +1,5 @@
+# Informal test of define_coord
+
 library(tidyverse)
 library(readr)
 library(plotly)
