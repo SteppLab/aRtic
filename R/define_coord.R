@@ -6,7 +6,8 @@
 #' @param data A string representing the name of the data matrix (imported from load_tsv)
 #' @param ref_idx A vector of the numeric ids of the three referent sensors
 #' @param bp_idx A vector of the numeric ids of the bite plane sensors
-#' @return A 3D array of the rotated coordinate data for the referent and bp sensors
+#' @return A list containing the 3D array of the rotated coordinate plane, the rotation matrix
+#' and translation vector
 #' @import dplyr pracma
 #' @export
 #' 
@@ -60,24 +61,10 @@ define_coord <- function(data, ref_idx, bp_idx) {
     }
   }
   
-  # Defining normal vector and center of the head plane
-  head_vec <- norm_vec(mean_data, ref_idx)
-  
-  # Computing rotation axis and angle between normal vector and head vector
-  head_axis <- pracma::cross(normal_vec, head_vec)
-  head_axis <- head_axis/sqrt(sum(head_axis^2))
-  head_angle <- acos(pracma::dot(normal_vec, head_vec))
-  
-  head_rt <- rotation_matrix(head_axis, head_angle)
-  
-  head_center <- center(mean_data, ref_idx)
-  
   return(list(
     rotated_data = rotated_data,
     base_rt = base,
-    base_center = rot_center,
-    head_rt = head_rt,
-    head_center = head_center))
+    base_center = rot_center))
 
 }
 

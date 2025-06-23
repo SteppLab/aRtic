@@ -5,11 +5,12 @@
 #' in the XYZ plane.
 #' 
 #' @param data A 3d array of the palate trace recording
-#' @param ref_idx A vector of the numeric ids of the three referent sensors
-#' @param rotation A rotation matrix extracted from define_coord
-#' @param center A vector with a length of 3 representing the translation vector extracted from define_coord
+#' @param coord A 3D array of the rotated coordinate plane
+#' @param pl_idx The numeric value representing the palate trace sensor
+#' @param base_rt The rotation matrix extracted from the rotated coordinate plane
+#' @param base_center A vector with a length of 3 representing the translation vector extracted from the rotated coordinate plane
 #' @return A 2D matrix of the estimated X, Y, and Z coordinates of the palate
-#' @import dplyr pracma geometry sp correct_mov interp_filter
+#' @import dplyr pracma 
 #' @export
 #' 
 
