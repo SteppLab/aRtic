@@ -28,18 +28,16 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   ref_mean <- apply(palate_trace[, , ref_idx], c(2, 3), mean, na.rm = T) |>
     t()
   
+  normal_vec <- norm_vec(ref_mean, ref_idx)
+  
   s1 <- ref_mean[1, ]
   s2 <- ref_mean[2, ]
   s3 <- ref_mean[3, ]
   
   v1 <- s2 - s1
-  v2 <- s3 - s1
-  
-  normal <- pracma::cross(v1, v2)
-  normal <- normal/sqrt(sum(normal^2))
   
   u <- v1/sqrt(sum(v1^2))
-  v <- pracma::cross(normal, u)
+  v <- pracma::cross(normal_vec, u)
   
   origin <- s1
   triangle_2d <- rbind(
@@ -53,7 +51,7 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   for (t in 1:n_time) {
     
     pt <- palate_trace[t, ,pl_idx]
-    pt_proj <- project_point_to_plane(pt, origin, normal)
+    pt_proj <- project_point_to_plane(pt, origin, normal_vec)
     pt_2d <- to_2d(pt_proj, origin, u, v)
     
     in_triangle <- sp::point.in.polygon(
@@ -70,18 +68,35 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   }
   
   palate <- palate_trace[ , ,pl_idx]
+  palate_idx <- complete.cases(palate)
   
-  palate_clean <- palate[!apply(palate, 1, function(row) any(is.na(row))), ]
+  mean <- colMeans(palate[palate_idx,], na.rm = T)
   
-  coords <- scale(palate_clean, center = T, scale = F)
+  distances <- apply(palate, 1, function(row) {
+    if (any(is.na(row))) return(NA)
+    sqrt(sum((row-mean)^2))
+  })
+  
+  threshold <- mean(distances, na.rm = T) + 2*sd(distances, na.rm = T)
+  
+  outliers <- which(distances > threshold)
+  palate_trace[outliers, , pl_idx] <- NA
+  
+  keep <- which(complete.cases(palate_trace[, , pl_idx]))
+  
+  palate_clean <- palate_trace[keep, , , drop = F]
+  
+  palate_coords <- palate_clean[, , pl_idx]
+  
+  coords <- scale(palate_coords, center = T, scale = F)
   
   pca <- prcomp(coords)
   
   pc1_vals <- pca$x[ , 1]
   
-  spline_x <- smooth.spline(x = pc1_vals, y = coords[, 1], spar = .6)
-  spline_y <- smooth.spline(x = pc1_vals, y = coords[, 2], spar = .6)
-  spline_z <- smooth.spline(x = pc1_vals, y = coords[, 3], spar = .6)
+  spline_x <- smooth.spline(x = pc1_vals, y = coords[, 1], spar = .8)
+  spline_y <- smooth.spline(x = pc1_vals, y = coords[, 2], spar = .8)
+  spline_z <- smooth.spline(x = pc1_vals, y = coords[, 3], spar = .8)
   
   s_grid <- seq(min(pc1_vals), max(pc1_vals), length.out = 200)
   
