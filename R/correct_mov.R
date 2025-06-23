@@ -4,6 +4,7 @@
 #' in reference to rotated bite plane data.
 #' 
 #' @param filtered A 3d array of interpolated and filtered data from the data recording
+#' @param coord A 3d array of the rotated bite plane data
 #' @param ref_idx A vector of the numeric ids of the three referent sensors
 #' @param rotation A rotation matrix extracted from define_coord
 #' @param center A vector with a length of 3 representing the translation vector extracted from define_coord
@@ -11,10 +12,9 @@
 #' @import dplyr pracma
 #' @export
 #' 
-correct_mov <- function(filtered, ref_idx, rotation, center) {
+correct_mov <- function(filtered, coord, ref_idx, base_rt, base_center) {
   
   n_time <- dim(filtered)[1]
-  n_dims <- dim(filtered)[2]
   n_sens <- dim(filtered)[3]
   
   aligned <- array(NA_real_, dim = c(n_time, 3, n_sens))
@@ -22,11 +22,11 @@ correct_mov <- function(filtered, ref_idx, rotation, center) {
   for (t in 1:n_time) {
     for(s in 1:n_sens) {
       vec <- filtered[t, 1:3, s]
-      aligned[t, ,s] <- as.vector(rotation %*% (vec - center))
+      aligned[t, ,s] <- as.vector(base_rt %*% (vec - base_center))
     }
   }
   
-  ref_target <- apply(aligned[, , ref_idx], c(2,3), mean, na.rm = T)
+  ref_target <- apply(coord[, , ref_idx], c(2,3), mean, na.rm = T)
   corrected <- array(NA, dim = dim(aligned))
   
   for (k in 1:n_time) {
@@ -60,10 +60,9 @@ correct_mov <- function(filtered, ref_idx, rotation, center) {
     aligned_frame <- sweep(rotated, 2, mean_target, FUN = "+")
     
     corrected[k, , ] <- t(aligned_frame)
-    
-    }
-    
+  
+  }
+  
   return(corrected)
   
 }
-

@@ -6,8 +6,9 @@
 #' @param data A string representing the name of the data matrix (imported from load_tsv)
 #' @param ref_idx A vector of the numeric ids of the three referent sensors
 #' @param bp_idx A vector of the numeric ids of the bite plane sensors
-#' @return A 3D array of the rotated coordinate data for the referent and bp sensors
-#' @import dplyr readr abind pracma
+#' @return A list containing the 3D array of the rotated coordinate plane, the rotation matrix
+#' and translation vector
+#' @import dplyr pracma
 #' @export
 #' 
 
@@ -29,54 +30,41 @@ define_coord <- function(data, ref_idx, bp_idx) {
   n_dims <-dim(data)[2] # Number of dimensions 
   n_sens <-dim(data)[3] # Number of Sensors
 
-
   # Mean location of palate and referent points
-  all_idx <- c(ref_idx, bp_idx)
-  
-  subset_data <- data[, 1:3, all_idx]
+  subset_data <- data[, 1:3, ]
   
   mean_data <- apply(subset_data, c(2, 3), function(x) mean(x, na.rm = T)) |>
     t()
   
-  # define vector of angles
-  p5 <- mean_data[4, ]  # Sensor 5
-  p6 <- mean_data[5, ]  # Sensor 6
-  p7 <- mean_data[6, ]  # Sensor 7
-  
-  # Normal vector of the palate plane (5, 6, 7) divide each element by size of vector
-  
-  V1 <- p5 - p7 # bp point 5 - bp point 7  
-  V2 <- p6 - p7 # bp point 6 - bp point 7
-  
-  center <- p7
-  
-  norm_vec <- pracma::cross(V2, V1)
-  norm_vec <- norm_vec / sqrt(sum(norm_vec^2))
+  # Computing the normal vector of the bite plane
+  normal_vec <- norm_vec(mean_data, bp_idx)
   
   # Setting the referent vector
-  ref_vec <- c(0, 1, 0)
+  ref_vec <- c(0, -1, 0)
   
-  # Computing rotation axis and angle between the norm vector and referent vector
-  axis <- pracma::cross(norm_vec, ref_vec)
+  # Computing rotation axis and angle between the normal vector and referent vector
+  axis <- pracma::cross(normal_vec, ref_vec)
   axis <- axis/sqrt(sum(axis^2))
-  angle <- acos(pracma::dot(norm_vec, ref_vec))
+  angle <- acos(pracma::dot(normal_vec, ref_vec))
   
   base <- rotation_matrix(axis, angle)
   
-  # Rotate data (example for rotating each point in data_3D)
+  rot_center <- center(mean_data, bp_idx)
+  
+  # Rotate data
   rotated_data <- array(NA, dim = c(dim(data)[1], 3, dim(data)[3]))
   
   for (t in 1:dim(data)[1]) {
     for (s in 1:dim(data)[3]) {
       vec <- data[t, 1:3, s]
-      rotated_data[t, , s] <- base %*% (vec - center)
+      rotated_data[t, , s] <- base %*% (vec - rot_center)
     }
   }
   
   return(list(
     rotated_data = rotated_data,
-    rotation = base,
-    center = center))
+    base_rt = base,
+    base_center = rot_center))
 
 }
 

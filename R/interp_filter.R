@@ -28,6 +28,8 @@ interp_filter <- function(raw, ref_idx) {
       if (length(k) > 0) {
         
         interp_tmp <- zoo::na.approx(tmp, na.rm = F)
+        interp_tmp <- zoo::na.locf(interp_tmp, na.rm = FALSE)  # forward fill
+        interp_tmp <- zoo::na.locf(interp_tmp, fromLast = TRUE, na.rm = FALSE)  # backward fill
         na_idx[[length(na_idx) + 1]] <- list(i = i, j = j, k = k)
         interpolated[ ,i,j] <- interp_tmp
         
@@ -44,6 +46,11 @@ interp_filter <- function(raw, ref_idx) {
   
   filtered <- array(NA_real_, dim = dim(interpolated))
   for (k in 1:dim(interpolated)[3]) {
+    
+    if (anyNA(interpolated[,,k])) {
+      message(sprintf("Skipping sensor %d due to internal NAs.", k))
+      next
+    }
     
     if (k %in% ref_idx) {
       filtered[ , 1:3, k] <- filtfilt(butter5, interpolated[ , 1:3, k])

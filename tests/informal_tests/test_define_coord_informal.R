@@ -1,3 +1,5 @@
+# Informal test of define_coord
+
 library(tidyverse)
 library(readr)
 library(plotly)
@@ -7,6 +9,8 @@ library(pracma)
 source(".\\R\\load_tsv.R")
 source(".\\R\\define_coord.R")
 source(".\\R\\rotation_matrix.R")
+source(".\\R\\norm_vec.R")
+source(".\\R\\center.R")
 
 data <- load_tsv(here("tests", "sample_data", "PLURAL02_BitePlane.tsv"))
 
@@ -60,11 +64,13 @@ plot_original
 
 rotated_df <- list()
 
-n_dims <- dim(rotated)[1]
+rotated_data <- rotated[[1]]
+
+n_dims <- dim(rotated_data)[1]
 
 for (sensor in 1:8) {
   
-  sensor_data <- rotated[, 1:3, sensor]
+  sensor_data <- rotated_data[, 1:3, sensor]
   
   axis_name <- c("X", "Y", "Z")
   
