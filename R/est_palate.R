@@ -9,7 +9,7 @@
 #' @param pl_idx The numeric value representing the palate trace sensor
 #' @param base_rt The rotation matrix extracted from the rotated coordinate plane
 #' @param base_center A vector with a length of 3 representing the translation vector extracted from the rotated coordinate plane
-#' @return A 2D matrix of the estimated X, Y, and Z coordinates of the palate
+#' @return A data frame of the estimated X, Y, and Z coordinates of the palate
 #' @import dplyr pracma 
 #' @export
 #' 
