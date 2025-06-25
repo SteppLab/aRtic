@@ -1,35 +1,37 @@
-README
-================
-Micah E. Hirsch, Ph.D. <mehirsch@bu.edu>
-2025-06-25
+---
+title: "README"
+author: "Micah E. Hirsch, Ph.D. mehirsch@bu.edu"
+date: "2025-06-25"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 # aRtic
 
-This package is designed to preprocess articulatory kinematic data
-collected from EMA systems. It is currently in beta, designed to support
-primary use cases with limited functionality.
+This package is designed to preprocess articulatory kinematic data collected from EMA systems. It is currently in beta, designed to support primary use cases with limited functionality.
 
-Further enhancements and expanded features are planned based on user
-feedback. Ideal for users comfortable with scripting in R. A shiny app
-may be developed in the future
+Further enhancements and expanded features are planned based on user feedback. Ideal for users comfortable with scripting in R. A shiny app may be developed in the future
 
 ## Installation
 
-You can install the latest development version of the package from
-Github.
+You can install the latest development version of the package from Github.
 
-``` r
+```{r, eval = F}
+
 install.packages("remotes") # if you don't have remotes installed
 remotes::install_github("SteppLab/aRtic")
+
 ```
 
 ## Usage
 
-Here is a basic example of how to use the package. For more information
-on function syntax, please check the documentation under the /man
-folder.
+Here is a basic example of how to use the package. For more information on function syntax, please check the documentation under the /man folder.
 
-``` r
+```{r, eval = F}
+
 library(aRtic)
 
 # Load Your Data
@@ -57,17 +59,16 @@ corrected <- correct_mov(filtered, coord[[1]], ref_idx, coord[[2]], coord[[3]])
 # Estimate X, Y, and Z coordinates of palate trace (optional)
 ## filtering and correct_mov are done in this function already
 palate <- est_palate(corrected, coord[[1]], ref_idx, pl_idx, coord[[2]], coord[[3]])
+
 ```
 
 # Feedback, Questions, and Contribution
 
 This package is in active development.
 
-If you have feature requests, bug reports, or questions, please either
-open an issue on Github or email Micah at <mehirsch@bu.edu>.
+If you have feature requests, bug reports, or questions, please either open an issue on Github or email Micah at [mehirsch\@bu.edu](mailto:mehirsch@bu.edu){.email}.
 
-If you have ideas and would like to contribute to the project, please
-email Micah.
+If you have ideas and would like to contribute to the project, please email Micah.
 
 # License
 
