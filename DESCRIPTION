@@ -1,10 +1,12 @@
 Package: aRtic
 Type: Package
 Title: Preprocessing Sensor Data from EMA Systems
-Version: 0.0.0.9000
+Version: 0.1.0
 Author: Micah E. Hirsch, Ph.D. [aut, cre]
 Maintainer: Micah E. Hirsch <mehirsch@bu.edu>
-Description: This package is to provide an R workflow for preprocessing and analyzing articulatory kinematic data.
+Description: This package is currently in beta. The purpose of this package is for the preprocessing of articulatory kinematic data from EMA systems. 
+  The current version of this package is designed to support primary use cases with limited functionality. Further enhancements and expanded
+  functionality are planned based on feedback. Ideal for users comfortable with scripting; a Shiny app may be developed in the future.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -15,4 +17,4 @@ Imports:
   signal,
   abind,
   pracma
-
+RoxygenNote: 7.3.2
