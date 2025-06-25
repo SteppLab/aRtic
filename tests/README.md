@@ -1,0 +1,72 @@
+README
+================
+Micah E. Hirsch, Ph.D. <mehirsch@bu.edu>
+2025-06-25
+
+# aRtic
+
+**Version:** 0.1.0 (Beta)
+
+This package provides core functionality for preprocessing articulatory
+kinematic data from EMA systems. It is currently in beta, designed to
+support primary use cases with limited functionality.
+
+Further enhancements and expanded features are planned based on user
+feedback. Ideal for users comfortable with scripting with R. A Shiny app
+may be developed in the future.
+
+## Installation
+
+``` r
+install.packages("remotes") # if you do not have remotes installed
+remotes::install_github("StreppLab/aRtic")
+```
+
+## Usage
+
+Here is a basic example of how to use the package:
+
+``` r
+library(aRtic)
+
+# Load Data
+bite_plane_data <- load_tsv("your_file_path")
+sensor_data <- load_tsv("your_file_path")
+palate_trace_data <- load_tsv("your_file_path")
+
+# Define referent, bite plane, and palate trace sensor idicies
+## The current version of this package requires 3 referent sensors (two behind the left and right mastoids, one on the incisor)
+
+ref_idx <- c(1, 2, 3)
+bp_idx <- c(5, 6, 7)
+pl_idx <- 8
+
+# Defining the coordinate plane from the bite plane recording
+coord <- define_coord(bite_plane_data[[1]], ref_idx, bp_idx)
+
+# Interpolation and filtering of sensor data recording
+filtered <- interp_filter(sensor_data[[1]], ref_idx)
+
+# Rotate and correct sensor recording for head movement
+corrected <- correct_mov(filtered, coord[[1]], ref_idx, coord[[2]], coord[[3]])
+
+# Estimate palate location (optional)
+## Filtering and rotation steps are built into this function
+
+palate <- est_palate(palate_trace_data[[1]], coord[[1]], ref_idx, pl_idx, coord[[2]], coord[[3]])
+```
+
+Please see /man folder for more information
+
+# Feedback and Contribution
+
+This package is in active development.
+
+If you have feature requests, bug reports, or questions, please open an
+issue on GitHub or email Micah at <mehirsch@bu.edu>
+
+**Report Issues Here:** <https://github.com/SteppLab/aRtic/issues>
+
+# License
+
+MIT © 2025 SteppLab
