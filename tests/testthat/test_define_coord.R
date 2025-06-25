@@ -6,7 +6,7 @@ library(abind)
 library(here)
 
 test_that("define_coord rotates data", {
-  test_data <- load_tsv(here("tests", "sample_data", "PLURAL44_BitePlane.tsv"))
+  test_data <- load_tsv(here("tests", "sample_data", "PLURAL02_BitePlane.tsv"))
   n_time <- dim(test_data[[1]])[1]
   n_sensors <- dim(test_data[[1]])[3]
   ref_idx <- c(1, 2, 3)
