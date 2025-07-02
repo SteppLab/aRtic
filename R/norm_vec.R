@@ -6,7 +6,6 @@
 #' @param sensor_idx A vector of the numeric ids of the three plane sensors
 #' @return A vector with a length of three representing the normal vector of the plane
 #' @import dplyr pracma
-#' @export
 #' 
 
 norm_vec <- function(mean_data, sensor_idx) {

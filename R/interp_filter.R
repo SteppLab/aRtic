@@ -8,7 +8,7 @@
 #' @param ref_idx A vector representing the numeric ids of the three referent sensors
 #' @return The resulting 3D matrix of data
 #' @import zoo signal
-#' @export
+#' 
 
 interp_filter <- function(raw, ref_idx) {
   
