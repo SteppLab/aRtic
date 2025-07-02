@@ -13,14 +13,14 @@ correct_mov(filtered, coord, ref_idx, base_rt, base_center)
 
 \item{ref_idx}{A vector of the numeric ids of the three referent sensors}
 
-\item{rotation}{A rotation matrix extracted from define_coord}
+\item{base_rt}{A rotation matrix extracted from define_coord}
 
-\item{center}{A vector with a length of 3 representing the translation vector extracted from define_coord}
+\item{base_center}{A vector with a length of 3 representing the translation vector extracted from define_coord}
 }
 \value{
 A 3D array of the rotated data from the data recording
 }
 \description{
-Purpose: This function rotates 3D articulatory kinematic data from a data recording
+This function rotates 3D articulatory kinematic data from a recording
 in reference to rotated bite plane data.
 }
