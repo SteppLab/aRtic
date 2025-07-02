@@ -1,6 +1,6 @@
 #' Correct Movement Function (correct_mov)
 #'
-#' Purpose: This function rotates 3D articulatory kinematic data from a data recording
+#' This function rotates 3D articulatory kinematic data from a recording
 #' in reference to rotated bite plane data.
 #' 
 #' @param filtered A 3d array of interpolated and filtered data from the data recording
