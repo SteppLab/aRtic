@@ -6,8 +6,8 @@
 #' @param filtered A 3d array of interpolated and filtered data from the data recording
 #' @param coord A 3d array of the rotated bite plane data
 #' @param ref_idx A vector of the numeric ids of the three referent sensors
-#' @param rotation A rotation matrix extracted from define_coord
-#' @param center A vector with a length of 3 representing the translation vector extracted from define_coord
+#' @param base_rt A rotation matrix extracted from define_coord
+#' @param base_center A vector with a length of 3 representing the translation vector extracted from define_coord
 #' @return A 3D array of the rotated data from the data recording
 #' @import dplyr pracma
 #' 
@@ -63,5 +63,6 @@ correct_mov <- function(filtered, coord, ref_idx, base_rt, base_center) {
   
   }
   
+  return(corrected)
   
 }

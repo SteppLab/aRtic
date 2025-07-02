@@ -14,21 +14,21 @@
 #' @export
 #' 
 
-rotate <- function(data, coord, ref_idx, rotaton, center, time) {
+rotate <- function(data, coord, ref_idx, base_rt, base_center, time) {
   
   # Interpolate and filter missing values
   filtered <- interp_filter(data, ref_idx)
   
   # rotate the data
-  rotated <- correct_mov(fitlered, coord, ref_idx, rotation, center)
+  rotated <- correct_mov(filtered, coord, ref_idx, base_rt, base_center)
   
   # merge data with time stamp information
-  all_idx <- dim(corrected)[3]
-  n_time <- dim(corrected)[1]
+  all_idx <- c(1:8)
+  n_time <- dim(rotated)[1]
   
   trajectory <- lapply(seq_along(all_idx), function(i) {
     s <- all_idx[i]
-    df <- as.data.frame(corrected[, 1:3, s])
+    df <- as.data.frame(rotated[, 1:3, s])
     colnames(df) <- c("X", "Y", "Z")
     df$Time <- 1:n_time
     df$Sensor <- paste0(s)
