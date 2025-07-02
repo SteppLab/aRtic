@@ -10,8 +10,8 @@
 #' @param center A vector with a length of 3 representing the translation vector extracted from define_coord
 #' @return A 3D array of the rotated data from the data recording
 #' @import dplyr pracma
-#' @export
 #' 
+
 correct_mov <- function(filtered, coord, ref_idx, base_rt, base_center) {
   
   n_time <- dim(filtered)[1]
@@ -63,6 +63,5 @@ correct_mov <- function(filtered, coord, ref_idx, base_rt, base_center) {
   
   }
   
-  return(corrected)
   
 }

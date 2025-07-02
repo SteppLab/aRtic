@@ -6,7 +6,6 @@
 #' @param sensor_idx A vector of the numeric ids of the three plane sensors
 #' @return A vector with a length of three representing the translation vector for rotation
 #' @import dplyr pracma
-#' @export
 #' 
 
 center <- function(mean_data, sensor_idx) {
