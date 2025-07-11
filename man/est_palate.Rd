@@ -21,7 +21,7 @@ est_palate(data, coord, ref_idx, pl_idx, base_rt, base_center)
 A data frame of the estimated X, Y, and Z coordinates of the palate
 }
 \description{
-Purpose: This function rotates 3D articulatory kinematic data from a palate tracing,
+This function rotates 3D articulatory kinematic data from a palate tracing,
 rotates and corrects the data from head movement, and then calculates an estimated palate location 
 in the XYZ plane.
 }
