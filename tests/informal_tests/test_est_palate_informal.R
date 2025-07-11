@@ -17,9 +17,9 @@ source(".\\R\\est_palate.R")
 source(".\\R\\norm_vec.R")
 source(".\\R\\center.R")
 
-bite_data <- load_tsv(here("tests", "sample_data", "PLURAL02_BitePlane.tsv"))
+bite_data <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\artic_recordings\\PLURAL33\\Plural33_BitePlane.tsv")
 
-ref_idx <- c(1,2,3)
+ref_idx <- c(1,2,4)
 bp_idx <- c(5,6,7)
 pl_idx <- 8
 
@@ -33,7 +33,7 @@ rotation <- rotated[[2]]
 
 center <- rotated[[3]]
 
-data_palate <- load_tsv(here("tests", "sample_data", "PLURAL02_PalateTrace.tsv"))
+data_palate <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\artic_recordings\\PLURAL33\\PLURAL33_PalateTrace.tsv")
 
 data <- data_palate[[1]]
 
@@ -56,6 +56,6 @@ palate_df <- do.call(rbind, palate_trace1)
 
 palate_df <- as.data.frame(palate_df)
 
-plot_ly(palate_df, x = ~X, y = ~Y, color = ~Sensor,
-        type = "scatter", mode = "lines") 
+plot_ly(palate_df, x = ~X, y = ~Y, z = ~Z, color = ~Sensor,
+        type = "scatter3d", mode = "lines") 
 

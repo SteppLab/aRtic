@@ -3,7 +3,7 @@
 #' Calculates the normal vector in reference to a plane defined by three points
 #' 
 #' @param mean_data A 2D matrix representing the mean points in the X, Y, and Z dimensions of three sensors
-#' @param sensor_idx A vector of the numeric ids of the three plane sensors
+#' @param sensor_idx A vector with a length of three representing the sensor indicies of interest.
 #' @return A vector with a length of three representing the normal vector of the plane
 #' @import dplyr pracma
 #' 
