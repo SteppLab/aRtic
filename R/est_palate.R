@@ -1,6 +1,6 @@
 #' Palate trace Function (est_palate)
 #'
-#' Purpose: This function rotates 3D articulatory kinematic data from a palate tracing,
+#' This function rotates 3D articulatory kinematic data from a palate tracing,
 #' rotates and corrects the data from head movement, and then calculates an estimated palate location 
 #' in the XYZ plane.
 #' 
@@ -31,9 +31,9 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   
   normal_vec <- norm_vec(ref_mean, ref_idx)
   
-  s1 <- ref_mean[1, ]
-  s2 <- ref_mean[2, ]
-  s3 <- ref_mean[3, ]
+  s1 <- ref_mean[ref_idx[1], ]
+  s2 <- ref_mean[ref_idx[2], ]
+  s3 <- ref_mean[ref_idx[3], ]
   
   v1 <- s2 - s1
   
