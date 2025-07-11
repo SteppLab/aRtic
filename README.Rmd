@@ -1,7 +1,7 @@
 ---
 title: "README"
 author: "Micah E. Hirsch, Ph.D. mehirsch@bu.edu"
-date: "2025-06-25"
+date: "2025-07-11"
 output: github_document
 ---
 
@@ -11,64 +11,84 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # aRtic
 
-**Version:** 0.2.0
+**Version:** 0.2.1 (Beta)
 
-This package is designed to preprocess articulatory kinematic data collected from EMA systems. It is currently in beta, designed to support primary use cases with limited functionality.
+This package provides core functionality for preprocessing articulatory kinematic data from EMA systems. It is currently in beta, designed to support primary use cases with limited functionality.
 
-Further enhancements and expanded features are planned based on user feedback. Ideal for users comfortable with scripting in R. A shiny app may be developed in the future
+Further enhancements and expanded features are planned based on user feedback. Ideal for users comfortable with scripting with R. A Shiny app may be developed in the future.
 
 ## Installation
 
-You can install the latest development version of the package from Github.
-
 ```{r, eval = F}
 
-install.packages("remotes") # if you don't have remotes installed
-remotes::install_github("SteppLab/aRtic")
+install.packages("remotes") # if you do not have remotes installed
+remotes::install_github("StreppLab/aRtic")
 
 ```
 
 ## Usage
 
-Here is a basic example of how to use the package. For more information on function syntax, please check the documentation under the /man folder.
+Here is a basic example of how to use the package:
 
 ```{r, eval = F}
 
+# Loading the Package and Dependencies
 library(aRtic)
+library(signal)
+library(pracma)
+library(tidyverse)
+library(zoo)
+library(abind)
+library(readr)
 
-# Load Your Data
-## load_tsv returns a list: a 3d array of the raw data from the recording and a vector with the time stamps from the recording.
+# Load Data
+## This function returns a list. The first object is the data and the second object are the timestamps.
+bite_plane_data <- load_tsv("your_file_path")
+sensor_rec_data <- load_tsv("your_file_path")
+palate_trace_data <- load_tsv("your_file_path")
 
-bite_plane_data <- load_tsv("path_to_your_data.tsv") # Bite Plane Calibration Recording
-sensor_data <- load_tsv("path_to_your_data.tsv") # Sensor Recording 
-palate_trace_data <- load_tsv("path_to_your_data.tsv") # Palate Trace Recoridng (optional)
+sensor_data <- sensor_rec_data[[1]]
+time_stamps <- sensor_rec_data[[2]]
+palate_data <- palate_trace_data[[1]]
+bite_data <- bite_plane_data[[1]]
 
-# Define referent, biteplane, and palate sensor indices
-## For the current version, three referent sensors are required (2 on the left and right mastoids and 1 on the incisor)
+# Define referent, bite plane, and palate trace sensor idicies
+## The current version of this package requires 3 referent sensors (two behind the left and right mastoids, one on the incisor)
 
 ref_idx <- c(1, 2, 3)
 bp_idx <- c(5, 6, 7)
 pl_idx <- 8
 
-# Define the coordinate plane from the Bite Plane Recording
+# Defining the coordinate plane from the bite plane recording
+## This function returns a list of objects. First is the rotated plane data matrix, the second is the rotation matrix, and the third is the translation vector.
+
 coord <- define_coord(bite_plane_data[[1]], ref_idx, bp_idx)
+coord_data <- coord[[1]]
+base_rt <- coord[[2]]
+base_center <- coord[[3]]
 
-# Rotate sensor data to be aligned with the coordinate plane and correct for head movement
-corrected <- rotate(bite_plane_data[[1]], coord[[1]], ref_idx, coord[[2]], coord[[3]], bite_plan_data[[2]])
+# Interpolation and filtering of sensor data recording
+filtered <- interp_filter(sensor_data, ref_idx)
 
-# Estimate X, Y, and Z coordinates of palate trace (optional)
-## filtering and correct_mov are done in this function already
-palate <- est_palate(corrected, coord[[1]], ref_idx, pl_idx, coord[[2]], coord[[3]])
+# Rotate and correct sensor recording for head movement
+corrected <- rotate(filtered, coord_data, ref_idx, base_rt, base_center, time_stamps)
+
+# Estimate palate location (optional)
+## Filtering and rotation steps are built into this function
+
+palate <- est_palate(palate_data, coord_data, ref_idx, pl_idx, base_rt, base_center)
 
 ```
 
-# Feedback, Questions, and Contribution
+Please see /man folder for more information
+
+# Feedback and Contribution
 
 This package is in active development.
 
-If you have feature requests, bug reports, or questions, please either open an issue on Github or email Micah at [mehirsch\@bu.edu](mailto:mehirsch@bu.edu){.email}.
+If you have feature requests, bug reports, or questions, please open an issue on GitHub or email Micah at [mehirsch\@bu.edu](mailto:mehirsch@bu.edu){.email}
 
-If you have ideas and would like to contribute to the project, please email Micah.
+**Report Issues Here:** <https://github.com/SteppLab/aRtic/issues>
 
 # License
 
