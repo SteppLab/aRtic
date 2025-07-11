@@ -12,14 +12,14 @@ source(".\\R\\rotation_matrix.R")
 source(".\\R\\norm_vec.R")
 source(".\\R\\center.R")
 
-data <- load_tsv(here("tests", "sample_data", "PLURAL02_BitePlane.tsv"))
+data <- load_tsv(here("tests", "sample_data", "PLURAL33_BitePlane.tsv"))
 
-ref_idx <- c(1,2,3)
+ref_idx <- c(1,2,4)
 bp_idx <- c(5,6,7)
 
 data <- data[[1]]
 
-rotated <- define_coord(data, ref_idx, bp_idx)
+rotated <- define_coord(data, ref_idx, bp_idx, flip_axis = T)
 
 n_dims <- dim(data)[1]
 

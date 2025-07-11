@@ -9,7 +9,7 @@ norm_vec(mean_data, sensor_idx)
 \arguments{
 \item{mean_data}{A 2D matrix representing the mean points in the X, Y, and Z dimensions of three sensors}
 
-\item{sensor_idx}{A vector of the numeric ids of the three plane sensors}
+\item{sensor_idx}{A vector with a length of three representing the sensor indicies of interest.}
 }
 \value{
 A vector with a length of three representing the normal vector of the plane

@@ -4,7 +4,7 @@
 \alias{define_coord}
 \title{Define Coordinate Plane Function}
 \usage{
-define_coord(data, ref_idx, bp_idx)
+define_coord(data, ref_idx, bp_idx, flip_axis = FALSE)
 }
 \arguments{
 \item{data}{A string representing the name of the data matrix (imported from load_tsv)}
@@ -12,6 +12,8 @@ define_coord(data, ref_idx, bp_idx)
 \item{ref_idx}{A vector of the numeric ids of the three referent sensors}
 
 \item{bp_idx}{A vector of the numeric ids of the bite plane sensors}
+
+\item{flip_axis}{A optional conditional argument that flips the referent vector for purposes of orientation}
 }
 \value{
 A list containing the 3D array of the rotated coordinate plane, the rotation matrix

@@ -26,7 +26,7 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   
   palate_trace <- corrected_palate[, 1:3, ]
   
-  ref_mean <- apply(palate_trace[, , ref_idx], c(2, 3), mean, na.rm = T) |>
+  ref_mean <- apply(palate_trace, c(2, 3), mean, na.rm = T) |>
     t()
   
   normal_vec <- norm_vec(ref_mean, ref_idx)

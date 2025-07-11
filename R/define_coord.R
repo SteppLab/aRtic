@@ -6,13 +6,14 @@
 #' @param data A string representing the name of the data matrix (imported from load_tsv)
 #' @param ref_idx A vector of the numeric ids of the three referent sensors
 #' @param bp_idx A vector of the numeric ids of the bite plane sensors
+#' @param flip_axis A optional conditional argument that flips the referent vector for purposes of orientation
 #' @return A list containing the 3D array of the rotated coordinate plane, the rotation matrix
 #' and translation vector
 #' @import dplyr pracma
 #' @export
 #' 
 
-define_coord <- function(data, ref_idx, bp_idx) {
+define_coord <- function(data, ref_idx, bp_idx, flip_axis = FALSE) {
   
   # Checking is the minimum inputs are there
   if (missing(data) || missing(ref_idx)){
@@ -40,7 +41,15 @@ define_coord <- function(data, ref_idx, bp_idx) {
   normal_vec <- norm_vec(mean_data, bp_idx)
   
   # Setting the referent vector
-  ref_vec <- c(0, -1, 0)
+  if (flip_axis) {
+    
+    ref_vec <- c(0, 1, 0)
+    
+  } else {
+    
+    ref_vec <- c(0, -1, 0)
+    
+  }
   
   # Computing rotation axis and angle between the normal vector and referent vector
   axis <- pracma::cross(normal_vec, ref_vec)
