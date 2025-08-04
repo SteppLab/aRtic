@@ -81,11 +81,11 @@ plot(hull, type = "l")
 plot_ly() %>%
   add_trace(
     type = "scatter3d",
-    mode = "lines",
-    x = spline[, 1],
-    y = spline[, 2],
-    z = spline[, 3],
-    line = list(color = 'red', width = 4),
+    mode = "markers",
+    x = palate_coords[, 1],
+    y = palate_coords[, 2],
+    z = palate_coords[, 3],
+    #line = list(color = 'red', width = 4),
     name = "Smoothed Spline"
   )
 
