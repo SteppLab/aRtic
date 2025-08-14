@@ -89,21 +89,29 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   
   palate_coords <- palate_clean[, , pl_idx]
   
-  coords <- scale(palate_coords, center = T, scale = F)
+  arc_length <- c(0, cumsum(sqrt(rowSums(diff(palate_coords)^2))))
   
-  pca <- prcomp(coords)
+  spline_x <- smooth.spline(x = arc_length, y = palate_coords[, 1], spar = .8)
+  spline_y <- smooth.spline(x = arc_length, y = palate_coords[, 2], spar = .8)
+  spline_z <- smooth.spline(x = arc_length, y = palate_coords[, 3], spar = .8)
   
-  pc1_vals <- pca$x[ , 1]
+  hull_faces <- concaveman::concaveman(palate_coords, concavity = 1)
   
-  spline_x <- smooth.spline(x = pc1_vals, y = coords[, 1], spar = .8)
-  spline_y <- smooth.spline(x = pc1_vals, y = coords[, 2], spar = .8)
-  spline_z <- smooth.spline(x = pc1_vals, y = coords[, 3], spar = .8)
+  #coords <- scale(palate_coords, center = T, scale = F)
   
-  s_grid <- seq(min(pc1_vals), max(pc1_vals), length.out = 200)
+  #pca <- prcomp(coords)
+  
+  #pc1_vals <- pca$x[ , 1]
+  
+  
+  
+  s_grid <- seq(min(arc_length), max(arc_length), length.out = 200)
   
   fit_x <- predict(spline_x, s_grid)$y
   fit_y <- predict(spline_y, s_grid)$y
   fit_z <- predict(spline_z, s_grid)$y
+  
+  spline <- cbind(fit_x, fit_y, fit_z)
   
   spline_df <- data.frame(X = fit_x, Y = fit_y, Z = fit_z)
   
