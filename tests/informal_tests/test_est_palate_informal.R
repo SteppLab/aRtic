@@ -17,7 +17,7 @@ source(".\\R\\est_palate.R")
 source(".\\R\\norm_vec.R")
 source(".\\R\\center.R")
 
-bite_data <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\Training\\test_folder\\PLURALDT_BitePlane.tsv")
+bite_data <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\artic_recordings\\PLURAL02\\PLURAL02_BitePlane.tsv")
 
 ref_idx <- c(1,2,3)
 bp_idx <- c(5,6,7)
@@ -25,37 +25,62 @@ pl_idx <- 8
 
 bite_data_3d <- bite_data[[1]]
 
-rotated <- define_coord(bite_data_3d, ref_idx, bp_idx)
+rotated <- define_coord(bite_data_3d, ref_idx, bp_idx, flip = F)
 
-rotated_plane <- rotated[[1]]
+coord <- rotated[[1]]
 
-rotation <- rotated[[2]]
+base_rt <- rotated[[2]]
 
-center <- rotated[[3]]
+base_center <- rotated[[3]]
 
-data_palate <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\Training\\test_folder\\PLURALDT_PalateTrace.tsv")
+data_palate <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\artic_recordings\\PLURAL02\\PLURAL02_PalateTrace.tsv")
 
 data <- data_palate[[1]]
 
-palate_trace <- est_palate(data, rotated_plane, ref_idx, pl_idx, rotation, center)
+palate_trace <- est_palate(data, coord, ref_idx, pl_idx, base_rt, base_center)
 
-n_time <- dim(palate_trace)[1]
+n_dims <- dim(corrected_palate)[1]
 
-all_idx <- c(ref_idx, pl_idx)
+palate_df <- list()
 
-palate_trace1 <- lapply(seq_along(all_idx), function(i) {
-  s <- c(all_idx[i])
-  df <- as.data.frame(palate_trace[, 1:3, s])
-  colnames(df) <- c("X", "Y", "Z")
-  df$Time <- 1:n_time
-  df$Sensor <- paste0(s)
-  return(df)
-})
+for (sensor in 1:8) {
+  
+  palate_data <- corrected_palate[, 1:3, sensor]
+  
+  axis_name <- c("X", "Y", "Z")
+  
+  for (axis in 1:3) {
+    df <- data.frame(
+      sensor_id = rep(sensor, n_dims),
+      axis = rep(axis_name[axis], n_dims),
+      n_time <- 1:n_dims,
+      value = palate_data[, axis]
+    )
+    
+    palate_df[[length(palate_df) + 1]] <- df
+    
+  }
+  
+}
 
-palate_df <- do.call(rbind, palate_trace1)
+df_pal <- do.call(rbind,palate_df)
 
-palate_df <- as.data.frame(palate_coords)
+df_pal_wide <- df_pal |>
+  pivot_wider(names_from = "axis",
+              values_from = "value")
 
-plot_ly(palate_df, x = ~V1, y = ~V2, z = ~V3, 
+plot_ly(palate_trace, x = ~V1, y = ~V2, z = ~V3, 
+        #color = factor(sensor_id),
         type = "scatter3d", mode = "markers") 
+
+
+|>
+  add_trace(
+    data = palate_trace,
+    x = ~V1,
+    y = ~V2,
+    type = "scatter",
+    mode = "markers",
+    opacity = 0.6
+  )
 

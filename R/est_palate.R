@@ -26,47 +26,47 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   
   palate_trace <- corrected_palate[, 1:3, ]
   
-  ref_mean <- apply(palate_trace, c(2, 3), mean, na.rm = T) |>
-    t()
-  
-  normal_vec <- norm_vec(ref_mean, ref_idx)
-  
-  s1 <- ref_mean[ref_idx[1], ]
-  s2 <- ref_mean[ref_idx[2], ]
-  s3 <- ref_mean[ref_idx[3], ]
-  
-  v1 <- s2 - s1
-  
-  u <- v1/sqrt(sum(v1^2))
-  v <- pracma::cross(normal_vec, u)
-  
-  origin <- s1
-  triangle_2d <- rbind(
-    to_2d(s1, origin, u, v),
-    to_2d(s2, origin, u, v),
-    to_2d(s3, origin, u, v)
-  )
-  
-  in_triangle <- logical(n_time)
-  
-  for (t in 1:n_time) {
-    
-    pt <- palate_trace[t, ,pl_idx]
-    pt_proj <- project_point_to_plane(pt, origin, normal_vec)
-    pt_2d <- to_2d(pt_proj, origin, u, v)
-    
-    in_triangle <- sp::point.in.polygon(
-      pt_2d[1],
-      pt_2d[2],
-      triangle_2d[, 1],
-      triangle_2d[, 2]
-      ) > 0 
-      
-    if (!in_triangle) {
-      palate_trace[t, , pl_idx] <- NA
-    }
-    
-  }
+  # ref_mean <- apply(palate_trace, c(2, 3), mean, na.rm = T) |>
+  #   t()
+  # 
+  # normal_vec <- norm_vec(ref_mean, ref_idx)
+  # 
+  # s1 <- ref_mean[ref_idx[1], ]
+  # s2 <- ref_mean[ref_idx[2], ]
+  # s3 <- ref_mean[ref_idx[3], ]
+  # 
+  # v1 <- s2 - s1
+  # 
+  # u <- v1/sqrt(sum(v1^2))
+  # v <- pracma::cross(normal_vec, u)
+  # 
+  # origin <- s1
+  # triangle_2d <- rbind(
+  #   to_2d(s1, origin, u, v),
+  #   to_2d(s2, origin, u, v),
+  #   to_2d(s3, origin, u, v)
+  # )
+  # 
+  # in_triangle <- logical(n_time)
+  # 
+  # for (t in 1:n_time) {
+  #   
+  #   pt <- palate_trace[t, ,pl_idx]
+  #   pt_proj <- project_point_to_plane(pt, origin, normal_vec)
+  #   pt_2d <- to_2d(pt_proj, origin, u, v)
+  #   
+  #   in_triangle <- sp::point.in.polygon(
+  #     pt_2d[1],
+  #     pt_2d[2],
+  #     triangle_2d[, 1],
+  #     triangle_2d[, 2]
+  #     ) > 0 
+  #     
+  #   if (!in_triangle) {
+  #     palate_trace[t, , pl_idx] <- NA
+  #   }
+  #   
+  # }
   
   palate <- palate_trace[ , ,pl_idx]
   palate_idx <- complete.cases(palate)
@@ -89,25 +89,30 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   
   palate_coords <- palate_clean[, , pl_idx]
   
-  coords <- scale(palate_coords, center = T, scale = F)
+  arc_length <- c(0, cumsum(sqrt(rowSums(diff(palate_coords)^2))))
   
-  pca <- prcomp(coords)
+  spline_x <- smooth.spline(x = arc_length, y = palate_coords[, 1], spar = .8)
+  spline_y <- smooth.spline(x = arc_length, y = palate_coords[, 2], spar = .8)
+  spline_z <- smooth.spline(x = arc_length, y = palate_coords[, 3], spar = .8)
   
-  pc1_vals <- pca$x[ , 1]
-  
-  spline_x <- smooth.spline(x = pc1_vals, y = coords[, 1], spar = .8)
-  spline_y <- smooth.spline(x = pc1_vals, y = coords[, 2], spar = .8)
-  spline_z <- smooth.spline(x = pc1_vals, y = coords[, 3], spar = .8)
-  
-  s_grid <- seq(min(pc1_vals), max(pc1_vals), length.out = 200)
+  s_grid <- seq(min(arc_length), max(arc_length), length.out = 200)
   
   fit_x <- predict(spline_x, s_grid)$y
   fit_y <- predict(spline_y, s_grid)$y
   fit_z <- predict(spline_z, s_grid)$y
   
-  spline_df <- data.frame(X = fit_x, Y = fit_y, Z = fit_z)
+  hull_faces <- concaveman::concaveman(palate_coords, concavity = 4)
   
-  return(spline_df)
+  spline_df <- data.frame(hull_faces)
+  
+  spline_df <- spline_df |>
+    dplyr::rename(X = V1,
+                  Y = V2,
+                  Z = V3)
+  
+  palate_coords <- as.data.frame(palate_coords)
+  
+  return(palate_coords)
 
 }
 
