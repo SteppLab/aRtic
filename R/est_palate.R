@@ -78,7 +78,7 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
     sqrt(sum((row-mean)^2))
   })
   
-  threshold <- mean(distances, na.rm = T) + 2*sd(distances, na.rm = T)
+  threshold <- mean(distances, na.rm = T) + 1*sd(distances, na.rm = T)
   
   outliers <- which(distances > threshold)
   palate_trace[outliers, , pl_idx] <- NA
@@ -89,28 +89,40 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   
   palate_coords <- palate_clean[, , pl_idx]
   
-  arc_length <- c(0, cumsum(sqrt(rowSums(diff(palate_coords)^2))))
+  # arc_length <- c(0, cumsum(sqrt(rowSums(diff(palate_coords)^2))))
+  # 
+  # spline_x <- smooth.spline(x = arc_length, y = palate_coords[, 1], spar = .8)
+  # spline_y <- smooth.spline(x = arc_length, y = palate_coords[, 2], spar = .8)
+  # spline_z <- smooth.spline(x = arc_length, y = palate_coords[, 3], spar = .8)
+  # 
+  # s_grid <- seq(min(arc_length), max(arc_length), length.out = 200)
+  # 
+  # fit_x <- predict(spline_x, s_grid)$y
+  # fit_y <- predict(spline_y, s_grid)$y
+  # fit_z <- predict(spline_z, s_grid)$y
+  # 
+  # hull_faces <- concaveman::concaveman(palate_coords, concavity = 4)
+  # 
+  # spline_df <- data.frame(hull_faces)
+  # 
+  # spline_df <- spline_df |>
+  #   dplyr::rename(X = V1,
+  #                 Y = V2,
+  #                 Z = V3)
   
-  spline_x <- smooth.spline(x = arc_length, y = palate_coords[, 1], spar = .8)
-  spline_y <- smooth.spline(x = arc_length, y = palate_coords[, 2], spar = .8)
-  spline_z <- smooth.spline(x = arc_length, y = palate_coords[, 3], spar = .8)
+  palate_coords <- as.data.frame(palate_coords) |>
+    dplyr::mutate(row_index = 1:nrow(palate_coords))
   
-  s_grid <- seq(min(arc_length), max(arc_length), length.out = 200)
+  outliers <- palate_coords |>
+    dplyr::filter(V2 < -10)
   
-  fit_x <- predict(spline_x, s_grid)$y
-  fit_y <- predict(spline_y, s_grid)$y
-  fit_z <- predict(spline_z, s_grid)$y
-  
-  hull_faces <- concaveman::concaveman(palate_coords, concavity = 4)
-  
-  spline_df <- data.frame(hull_faces)
-  
-  spline_df <- spline_df |>
+  palate_coords <- palate_coords |>
+    dplyr::slice((101):(nrow(palate_coords) - 100)) |>
     dplyr::rename(X = V1,
                   Y = V2,
                   Z = V3)
   
-  palate_coords <- as.data.frame(palate_coords)
+  
   
   return(palate_coords)
 
