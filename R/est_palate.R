@@ -110,11 +110,7 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   #                 Y = V2,
   #                 Z = V3)
   
-  palate_coords <- as.data.frame(palate_coords) |>
-    dplyr::mutate(row_index = 1:nrow(palate_coords))
-  
-  outliers <- palate_coords |>
-    dplyr::filter(V2 < -10)
+  palate_coords <- as.data.frame(palate_coords)
   
   palate_coords <- palate_coords |>
     dplyr::slice((101):(nrow(palate_coords) - 100)) |>
@@ -122,6 +118,9 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
                   Y = V2,
                   Z = V3)
   
+  palate_coords <- palate_coords |>
+    dplyr::mutate(dist = sqrt((X - lag(X))^2 + (Y - lag(Y))^2 + (Z - lag(Z))^2),
+                  stable = dist < median(dist, na.rm = T) * 2)
   
   
   return(palate_coords)

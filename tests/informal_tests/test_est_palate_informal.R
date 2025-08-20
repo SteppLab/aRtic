@@ -40,7 +40,7 @@ data <- data_palate[[1]]
 palate_trace <- est_palate(data, coord, ref_idx, pl_idx, base_rt, base_center)
 
 
-plot_ly(palate_trace, x = ~X, y = ~Y, z = ~Z, 
+plot_ly(palate_coords, x = ~X, y = ~Y, z = ~Z, 
         #color = factor(sensor_id),
         type = "scatter3d", mode = "markers") 
 
