@@ -120,10 +120,18 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   
   palate_coords <- palate_coords |>
     dplyr::mutate(dist = sqrt((X - lag(X))^2 + (Y - lag(Y))^2 + (Z - lag(Z))^2),
-                  stable = dist < median(dist, na.rm = T) * 2)
+                  dist = replace_na(dist, 0),
+                  stable = dist < median(dist, na.rm = T) * 2,
+                  run_id = cumsum(stable != lag(stable, default = first(stable)))) |>
+    dplyr::filter(stable)
+  
+  arch <- palate_coords |>
+    dplyr::add_count(run_id) |>
+    dplyr::filter(n > 20) |>
+    dplyr::select(-n)
   
   
-  return(palate_coords)
+  return(arch)
 
 }
 
