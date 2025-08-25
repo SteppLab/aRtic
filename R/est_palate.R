@@ -78,7 +78,7 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
     sqrt(sum((row-mean)^2))
   })
   
-  threshold <- mean(distances, na.rm = T) + 1*sd(distances, na.rm = T)
+  threshold <- mean(distances, na.rm = T) + 2*sd(distances, na.rm = T)
   
   outliers <- which(distances > threshold)
   palate_trace[outliers, , pl_idx] <- NA
@@ -125,13 +125,7 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
                   run_id = cumsum(stable != lag(stable, default = first(stable)))) |>
     dplyr::filter(stable)
   
-  arch <- palate_coords |>
-    dplyr::add_count(run_id) |>
-    dplyr::filter(n > 20) |>
-    dplyr::select(-n)
-  
-  
-  return(arch)
+  return(palate_coords)
 
 }
 

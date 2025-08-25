@@ -17,7 +17,7 @@ source(".\\R\\est_palate.R")
 source(".\\R\\norm_vec.R")
 source(".\\R\\center.R")
 
-bite_data <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\artic_recordings\\PLURAL33\\PLURAL33_BitePlane.tsv")
+bite_data <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\artic_recordings\\PLURAL18\\PLURAL18_BitePlane.tsv")
 
 ref_idx <- c(1,2,3)
 bp_idx <- c(5,6,7)
@@ -33,11 +33,12 @@ base_rt <- rotated[[2]]
 
 base_center <- rotated[[3]]
 
-data_palate <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\artic_recordings\\PLURAL33\\PLURAL33_PalateTrace.tsv")
+data_palate <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\artic_recordings\\PLURAL18\\PLURAL18_PalateTrace.tsv")
 
 data <- data_palate[[1]]
 
 palate_trace <- est_palate(data, coord, ref_idx, pl_idx, base_rt, base_center)
+
 
 
 plot_ly(palate_trace, x = ~X, y = ~Y, z = ~Z, 
