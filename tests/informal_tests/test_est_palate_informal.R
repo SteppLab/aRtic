@@ -17,7 +17,7 @@ source(".\\R\\est_palate.R")
 source(".\\R\\norm_vec.R")
 source(".\\R\\center.R")
 
-bite_data <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\artic_recordings\\PLURAL18\\PLURAL18_BitePlane.tsv")
+bite_data <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\artic_recordings\\PLURAL02\\PLURAL02_BitePlane.tsv")
 
 ref_idx <- c(1,2,3)
 bp_idx <- c(5,6,7)
@@ -25,7 +25,7 @@ pl_idx <- 8
 
 bite_data_3d <- bite_data[[1]]
 
-rotated <- define_coord(bite_data_3d, ref_idx, bp_idx, flip = F)
+rotated <- define_coord(bite_data_3d, ref_idx, bp_idx, flip_axis = F)
 
 coord <- rotated[[1]]
 
@@ -33,7 +33,7 @@ base_rt <- rotated[[2]]
 
 base_center <- rotated[[3]]
 
-data_palate <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\artic_recordings\\PLURAL18\\PLURAL18_PalateTrace.tsv")
+data_palate <- load_tsv("R:\\SteppLab3\\Projects\\Voice\\SAKE\\artic_recordings\\PLURAL02\\PLURAL02_PalateTrace.tsv")
 
 data <- data_palate[[1]]
 
@@ -42,9 +42,30 @@ palate_trace <- est_palate(data, coord, ref_idx, pl_idx, base_rt, base_center)
 
 
 plot_ly(palate_trace, x = ~X, y = ~Y, z = ~Z, 
-        #color = factor(sensor_id),
-        type = "scatter3d", mode = "markers") 
+        type = "scatter3d", mode = "markers") |>
+  add_trace(x = ~line_points[,1],
+            y = ~line_points[,2],
+            z = ~line_points[,3],
+            type = "scatter3d")
 
+
+palate <- palate_trace |>
+  dplyr::select(X, Y, Z)
+
+palate_pca <- prcomp(palate)
+
+comp <- palate_pca$rotation[,1]
+
+center <- palate_pca$center
+
+generate_points <- function(center, pc_vec, t_values) {
+  sapply(t_values, function(t) center + t * pc_vec)
+}
+
+# Example: Generate points for plotting
+t_vals <- seq(-30, 30, length.out = 100) # Adjust range as needed
+line_points <- generate_points(center, comp, t_vals) |>
+  t()
 
 |>
   add_trace(

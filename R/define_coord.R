@@ -41,14 +41,14 @@ define_coord <- function(data, ref_idx, bp_idx, flip_axis = FALSE) {
   normal_vec <- norm_vec(mean_data, bp_idx)
   
   # Setting the referent vector
-  if (flip_axis) {
+  if (flip_axis) { 
     
     ref_vec <- c(0, 1, 0)
     
-  } else {
+  } else { 
     
-    ref_vec <- c(0, -1, 0)
-    
+    ref_vec <- c(0, -1, 0) 
+      
   }
   
   # Computing rotation axis and angle between the normal vector and referent vector
