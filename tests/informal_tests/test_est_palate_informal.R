@@ -25,7 +25,7 @@ pl_idx <- 8
 
 bite_data_3d <- bite_data[[1]]
 
-rotated <- define_coord(bite_data_3d, ref_idx, bp_idx)
+rotated <- define_coord(bite_data_3d, ref_idx, bp_idx, flip_axis = F)
 
 coord <- rotated[[1]]
 
@@ -37,27 +37,10 @@ data_palate <- load_tsv(here("tests", "sample_data", "PLURAL02_PalateTrace.tsv")
 
 data <- data_palate[[1]]
 
-palate_trace <- est_palate(data, rotated_plane, ref_idx, pl_idx, rotation, center)
+palate_trace <- est_palate(data, coord, ref_idx, pl_idx, base_rt, base_center)
 
-n_time <- dim(palate_trace)[1]
-
-all_idx <- c(ref_idx, pl_idx)
-
-palate_trace1 <- lapply(seq_along(all_idx), function(i) {
-  s <- c(all_idx[i])
-  df <- as.data.frame(palate_trace[, 1:3, s])
-  colnames(df) <- c("X", "Y", "Z")
-  df$Time <- 1:n_time
-  df$Sensor <- paste0(s)
-  return(df)
-})
-
-palate_df <- do.call(rbind, palate_trace1)
-
-palate_df <- as.data.frame(palate_df)
-
-plot_ly(palate_df, x = ~X, y = ~Y, z = ~Z, color = ~Sensor,
-        type = "scatter3d", mode = "lines") 
+plot_ly(palate_trace, x = ~X, y = ~Y, z = ~Z, 
+        type = "scatter3d", mode = "markers")
 
 tri_faces <- hull_faces$triang
 
