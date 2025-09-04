@@ -26,48 +26,6 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   
   palate_trace <- corrected_palate[, 1:3, ]
   
-  # ref_mean <- apply(palate_trace, c(2, 3), mean, na.rm = T) |>
-  #   t()
-  # 
-  # normal_vec <- norm_vec(ref_mean, ref_idx)
-  # 
-  # s1 <- ref_mean[ref_idx[1], ]
-  # s2 <- ref_mean[ref_idx[2], ]
-  # s3 <- ref_mean[ref_idx[3], ]
-  # 
-  # v1 <- s2 - s1
-  # 
-  # u <- v1/sqrt(sum(v1^2))
-  # v <- pracma::cross(normal_vec, u)
-  # 
-  # origin <- s1
-  # triangle_2d <- rbind(
-  #   to_2d(s1, origin, u, v),
-  #   to_2d(s2, origin, u, v),
-  #   to_2d(s3, origin, u, v)
-  # )
-  # 
-  # in_triangle <- logical(n_time)
-  # 
-  # for (t in 1:n_time) {
-  #   
-  #   pt <- palate_trace[t, ,pl_idx]
-  #   pt_proj <- project_point_to_plane(pt, origin, normal_vec)
-  #   pt_2d <- to_2d(pt_proj, origin, u, v)
-  #   
-  #   in_triangle <- sp::point.in.polygon(
-  #     pt_2d[1],
-  #     pt_2d[2],
-  #     triangle_2d[, 1],
-  #     triangle_2d[, 2]
-  #     ) > 0 
-  #     
-  #   if (!in_triangle) {
-  #     palate_trace[t, , pl_idx] <- NA
-  #   }
-  #   
-  # }
-  
   palate <- palate_trace[ , ,pl_idx]
   palate_idx <- complete.cases(palate)
   
@@ -89,27 +47,6 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   
   palate_coords <- palate_clean[, , pl_idx]
   
-  # arc_length <- c(0, cumsum(sqrt(rowSums(diff(palate_coords)^2))))
-  # 
-  # spline_x <- smooth.spline(x = arc_length, y = palate_coords[, 1], spar = .8)
-  # spline_y <- smooth.spline(x = arc_length, y = palate_coords[, 2], spar = .8)
-  # spline_z <- smooth.spline(x = arc_length, y = palate_coords[, 3], spar = .8)
-  # 
-  # s_grid <- seq(min(arc_length), max(arc_length), length.out = 200)
-  # 
-  # fit_x <- predict(spline_x, s_grid)$y
-  # fit_y <- predict(spline_y, s_grid)$y
-  # fit_z <- predict(spline_z, s_grid)$y
-  # 
-  # hull_faces <- concaveman::concaveman(palate_coords, concavity = 4)
-  # 
-  # spline_df <- data.frame(hull_faces)
-  # 
-  # spline_df <- spline_df |>
-  #   dplyr::rename(X = V1,
-  #                 Y = V2,
-  #                 Z = V3)
-  
   palate_coords <- as.data.frame(palate_coords)
   
   palate_coords <- palate_coords |>
@@ -121,21 +58,9 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
   palate_coords <- palate_coords |>
     dplyr::mutate(dist = sqrt((X - lag(X))^2 + (Y - lag(Y))^2 + (Z - lag(Z))^2),
                   dist = replace_na(dist, 0),
-                  stable = dist < median(dist, na.rm = T) * 2,
-                  run_id = cumsum(stable != lag(stable, default = first(stable)))) |>
+                  stable = dist < median(dist, na.rm = T) * 2) |>
     dplyr::filter(stable)
   
   return(palate_coords)
 
-}
-
-project_point_to_plane<- function(x, origin, normal) {
-  x_proj <- x - sum((x - origin) * normal) * normal
-  return(x_proj)
-}
-
-
-to_2d <- function(x_proj, origin, u, v) {
-  vec <- x_proj - origin
-  c(sum(vec * u), sum(vec * v))
 }
