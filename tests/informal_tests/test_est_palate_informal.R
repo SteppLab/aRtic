@@ -42,38 +42,5 @@ palate_trace <- est_palate(data, coord, ref_idx, pl_idx, base_rt, base_center)
 
 
 plot_ly(palate_trace, x = ~X, y = ~Y, z = ~Z, 
-        type = "scatter3d", mode = "markers") |>
-  add_trace(x = ~line_points[,1],
-            y = ~line_points[,2],
-            z = ~line_points[,3],
-            type = "scatter3d")
-
-
-palate <- palate_trace |>
-  dplyr::select(X, Y, Z)
-
-palate_pca <- prcomp(palate)
-
-comp <- palate_pca$rotation[,1]
-
-center <- palate_pca$center
-
-generate_points <- function(center, pc_vec, t_values) {
-  sapply(t_values, function(t) center + t * pc_vec)
-}
-
-# Example: Generate points for plotting
-t_vals <- seq(-30, 30, length.out = 100) # Adjust range as needed
-line_points <- generate_points(center, comp, t_vals) |>
-  t()
-
-|>
-  add_trace(
-    data = palate_trace,
-    x = ~V1,
-    y = ~V2,
-    type = "scatter",
-    mode = "markers",
-    opacity = 0.6
-  )
+        type = "scatter3d", mode = "markers")
 
