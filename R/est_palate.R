@@ -62,5 +62,5 @@ est_palate <- function(data, coord, ref_idx, pl_idx, base_rt, base_center) {
     dplyr::filter(stable)
   
   return(palate_coords)
-
+  
 }
