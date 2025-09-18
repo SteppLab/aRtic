@@ -39,47 +39,36 @@ data <- data_palate[[1]]
 
 palate_trace <- est_palate(data, coord, ref_idx, pl_idx, base_rt, base_center)
 
-plot_ly(palate_trace, x = ~X, y = ~Y, z = ~Z, 
-        type = "scatter3d", mode = "markers")
-
-tri_faces <- hull_faces$triang
-
-hull_faces <- as.data.frame(hull_faces)
-
-num_faces <- nrow(hull_faces)
-i <- seq(0, by = 3, length.out = num_faces)
-j <- i + 1
-k <- i + 2
-
-plot_ly(spline_df, x = ~X, y = ~Y, z = ~Z, type = "scatter3d",
-        mode = "lines+markers",
-              marker = list(size = 2))
-
-td_hull <- spline[, 1:2]
-
-hull <- concaveman(td_hull, concavity = 2)
-
-plot(hull, type = "l")
-
-plot_ly() %>%
+plot_ly() |>
   add_trace(
     type = "scatter3d",
     mode = "markers",
     x = palate_coords[, 1],
     y = palate_coords[, 2],
     z = palate_coords[, 3],
-    #line = list(color = 'red', width = 4),
-    name = "Smoothed Spline"
-  )
-
-plot_ly() %>%
-  add_trace(
-    type = "scatter",
-    mode = "markers",
-    x = palate_coords[, 1],
-    y = palate_coords[, 2],
     marker = list(size = 2),
     name = "Original Data"
-  ) |>
-  add_trace(x = hull[,1], y = hull[,2], 
-            type = 'scatter', mode = 'lines', line = list(color = 'red', width = 4))
+  )
+
+
+palate_coords <- palate_coords |>
+  dplyr::mutate(row_id = row_number(),
+                time = row_id/100)
+
+palate_coords |>
+  ggplot() +
+  aes(x = time,
+      y = X) +
+  geom_point() 
+  
+palate_coords |>
+  ggplot() +
+  aes(x = time,
+      y = Y) +
+  geom_point() 
+
+palate_coords |>
+  ggplot() +
+  aes(x = time,
+      y = Z) +
+  geom_point()
