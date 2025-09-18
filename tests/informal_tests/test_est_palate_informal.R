@@ -43,15 +43,15 @@ plot_ly() |>
   add_trace(
     type = "scatter3d",
     mode = "markers",
-    x = palate_coords[, 1],
-    y = palate_coords[, 2],
-    z = palate_coords[, 3],
+    x = palate_trace[, 1],
+    y = palate_trace[, 2],
+    z = palate_trace[, 3],
     marker = list(size = 2),
     name = "Original Data"
   )
 
 
-palate_coords <- palate_coords |>
+palate_coords <- palate_trace |>
   dplyr::mutate(row_id = row_number(),
                 time = row_id/100)
 
