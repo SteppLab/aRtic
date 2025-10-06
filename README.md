@@ -19,7 +19,7 @@ may be developed in the future.
 
 ``` r
 install.packages("remotes") # if you do not have remotes installed
-remotes::install_github("StreppLab/aRtic")
+remotes::install_github("SteppLab/aRtic")
 ```
 
 ## Usage
@@ -67,11 +67,6 @@ filtered <- interp_filter(sensor_data, ref_idx)
 
 # Rotate and correct sensor recording for head movement
 corrected <- rotate(filtered, coord_data, ref_idx, base_rt, base_center, time_stamps)
-
-# Estimate palate location (optional)
-## Filtering and rotation steps are built into this function
-
-palate <- est_palate(palate_data, coord_data, ref_idx, pl_idx, base_rt, base_center)
 ```
 
 Please see /man folder for more information
