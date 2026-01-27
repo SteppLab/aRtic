@@ -19,8 +19,10 @@ rotate <- function(data, coord, ref_idx, base_rt, base_center, time) {
   # Interpolate and filter missing values
   filtered <- interp_filter(data, ref_idx)
   
+  filtered_dx <- filtered[[1]]
+  
   # rotate the data
-  rotated <- correct_mov(filtered, coord, ref_idx, base_rt, base_center)
+  rotated <- correct_mov(filtered_dx, coord, ref_idx, base_rt, base_center)
   
   # merge data with time stamp information
   all_idx <- c(1:8)

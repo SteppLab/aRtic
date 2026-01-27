@@ -69,6 +69,9 @@ interp_filter <- function(raw, ref_idx) {
     
   #  }
   
-  return(filtered)
+  return(list(
+    filtered_data = filtered,
+    na_idx = na_idx)
+    )
   
 }
