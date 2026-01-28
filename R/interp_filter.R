@@ -62,14 +62,14 @@ interp_filter <- function(raw, ref_idx) {
   }
   
   na_df <- filtered
-  for (i in 1:length(na_idx)) {
-    current <- na_idx[i]
-    samps = current[[3]]
-    dim = current[[1]]
-    sens = current[[2]]
-    na_df[samps, dim, sens] <- NA
+  for (i in seq_along(na_idx)) {
+    current <- na_idx[[i]]
+    samps <- current[[3]]
+    dim   <- current[[1]]
+    sens  <- current[[2]]
     
-    }
+    na_df[samps, dim, sens] <- NA
+  }
   
   return(list(
     filtered_data = filtered,
