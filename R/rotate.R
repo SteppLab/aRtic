@@ -14,39 +14,74 @@
 #' @export
 #' 
 
-rotate <- function(data, coord, ref_idx, base_rt, base_center, time) {
+rotate <- function(data, coord, ref_idx, base_rt, base_center, time, na_keep = F) {
   
   # Interpolate and filter missing values
   filtered <- interp_filter(data, ref_idx)
   
   filtered_dx <- filtered[[1]]
+  na_dx <- filtered[[2]]
   
-  # rotate the data
+  if (na_keep = F) {
+    
+    # rotate the data
   rotated <- correct_mov(filtered_dx, coord, ref_idx, base_rt, base_center)
   
-  # merge data with time stamp information
-  all_idx <- c(1:8)
-  n_time <- dim(rotated)[1]
+    # merge data with time stamp information
+    all_idx <- c(1:8)
+    n_time <- dim(rotated)[1]
   
-  trajectory <- lapply(seq_along(all_idx), function(i) {
-    s <- all_idx[i]
-    df <- as.data.frame(rotated[, 1:3, s])
-    colnames(df) <- c("X", "Y", "Z")
-    df$Time <- 1:n_time
-    df$Sensor <- paste0(s)
-    return(df)
-  })
+    trajectory <- lapply(seq_along(all_idx), function(i) {
+      s <- all_idx[i]
+      df <- as.data.frame(rotated[, 1:3, s])
+      colnames(df) <- c("X", "Y", "Z")
+      df$Time <- 1:n_time
+      df$Sensor <- paste0(s)
+      return(df)
+    })
   
-  traj_df <- do.call(rbind, trajectory)
+    traj_df <- do.call(rbind, trajectory)
   
-  time_stamps <- as.data.frame(time)
+    time_stamps <- as.data.frame(time)
   
-  sensors <- traj_df |>
-    group_split(Sensor)
+    sensors <- traj_df |>
+      group_split(Sensor)
   
-  merged <- map2(sensors, time_stamps, ~mutate(.x, time = .y))
+    merged <- map2(sensors, time_stamps, ~mutate(.x, time = .y))
   
-  final_df <- bind_rows(merged)
+    final_df <- bind_rows(merged)
+  
+  } else {
+    
+    # rotate the data
+    rotated <- correct_mov(na_dx, coord, ref_idx, base_rt, base_center)
+    
+    # merge data with time stamp information
+    all_idx <- c(1:8)
+    n_time <- dim(rotated)[1]
+    
+    trajectory <- lapply(seq_along(all_idx), function(i) {
+      s <- all_idx[i]
+      df <- as.data.frame(rotated[, 1:3, s])
+      colnames(df) <- c("X", "Y", "Z")
+      df$Time <- 1:n_time
+      df$Sensor <- paste0(s)
+      return(df)
+    })
+    
+    traj_df <- do.call(rbind, trajectory)
+    
+    time_stamps <- as.data.frame(time)
+    
+    sensors <- traj_df |>
+      group_split(Sensor)
+    
+    merged <- map2(sensors, time_stamps, ~mutate(.x, time = .y))
+    
+    final_df <- bind_rows(merged)
+    
+  }
+  
   
   return(final_df)
   
