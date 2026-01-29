@@ -4,7 +4,7 @@
 \alias{rotate}
 \title{Rotate Sensor Recording Function (rotate)}
 \usage{
-rotate(data, coord, ref_idx, base_rt, base_center, time)
+rotate(data, coord, ref_idx, base_rt, base_center, time, na_keep = FALSE)
 }
 \arguments{
 \item{data}{A 3d array of the sensor recording data}
@@ -14,6 +14,8 @@ rotate(data, coord, ref_idx, base_rt, base_center, time)
 \item{ref_idx}{A vector of the numeric ids of the three referent sensors}
 
 \item{time}{A vector representing the time stamps of the original sensor data recording}
+
+\item{na_keep}{Logical; Default = FALSE; keep NA indicies if TRUE}
 
 \item{rotation}{A rotation matrix extracted from define_coord}
 

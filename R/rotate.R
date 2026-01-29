@@ -9,12 +9,13 @@
 #' @param rotation A rotation matrix extracted from define_coord
 #' @param center A vector with a length of 3 representing the translation vector extracted from define_coord
 #' @param time A vector representing the time stamps of the original sensor data recording
+#' @param na_keep Logical; Default = FALSE; keep NA indicies if TRUE
 #' @return A data frame of the rotated data ready for analysis
 #' @import dplyr pracma purrr
 #' @export
 #' 
 
-rotate <- function(data, coord, ref_idx, base_rt, base_center, time, na_keep = F) {
+rotate <- function(data, coord, ref_idx, base_rt, base_center, time, na_keep = FALSE) {
   
   # Interpolate and filter missing values
   filtered <- interp_filter(data, ref_idx)
@@ -22,10 +23,10 @@ rotate <- function(data, coord, ref_idx, base_rt, base_center, time, na_keep = F
   filtered_dx <- filtered[[1]]
   na_dx <- filtered[[2]]
   
-  if (na_keep = F) {
+  if (na_keep == FALSE) {
     
     # rotate the data
-  rotated <- correct_mov(filtered_dx, coord, ref_idx, base_rt, base_center)
+    rotated <- correct_mov(filtered_dx, coord, ref_idx, base_rt, base_center)
   
     # merge data with time stamp information
     all_idx <- c(1:8)
